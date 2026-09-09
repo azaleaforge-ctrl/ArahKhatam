@@ -69,9 +69,15 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
     armFinish(FALLBACK_MS);
     turnBarOn();
 
-    // Otomatis sekali jalan: coba putar langsung. Bila browser menahan
-    // autoplay, suara menyusul di interaksi pertama tanpa mengulang visual.
+    // Otomatis sekali jalan: coba putar bersuara langsung. Bila browser menahan
+    // autoplay, putar mute (selalu diizinkan) lalu unmute — di Chrome/Edge
+    // desktop ini menghasilkan suara tanpa perlu ketuk. Visual tetap sekali jalan.
     const unlock = () => {
+      try {
+        audio.muted = false;
+      } catch {
+        // abaikan
+      }
       void audio.play().catch(() => {});
     };
     window.addEventListener("pointerdown", unlock, { once: true });
@@ -79,7 +85,19 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
     window.addEventListener("keydown", unlock, { once: true });
 
     void audio.play().catch(() => {
-      // Visual tetap sekali jalan dengan durasi fallback.
+      audio.muted = true;
+      void audio.play().then(() => {
+        window.setTimeout(() => {
+          try {
+            audio.muted = false;
+          } catch {
+            // abaikan, unlock saat interaksi pertama yang tangani
+          }
+          void audio.play().catch(() => {});
+        }, 350);
+      }).catch(() => {
+        // Visual tetap sekali jalan dengan durasi fallback.
+      });
     });
 
     // Kunci scroll selama splash tampil.
