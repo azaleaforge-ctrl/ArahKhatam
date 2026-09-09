@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 
@@ -58,6 +58,9 @@ export default function SociabuzzFloat() {
   isTvRef.current = isTv;
   const widgetNodes = useRef<Element[]>([]);
   const hidden = useRef<{ el: HTMLElement; prev: string }[]>([]);
+  // Skrip pihak ketiga hanya dimuat di desktop; SSR tak punya window
+  // sehingga default null (aman), effect mengoreksi setelah mount.
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const hideWidget = () => {
     try {
@@ -136,6 +139,7 @@ export default function SociabuzzFloat() {
     // desktop: tampilkan lagi.
     const mq = window.matchMedia("(max-width: 767px)");
     const onChange = () => {
+      setIsDesktop(!mq.matches);
       if (mq.matches || isTvRef.current) hideWidget();
       else {
         restoreWidget();
@@ -143,8 +147,21 @@ export default function SociabuzzFloat() {
       }
     };
     onChange();
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    type LegacyMQ = MediaQueryList & {
+      addListener?: (cb: () => void) => void;
+      removeListener?: (cb: () => void) => void;
+    };
+    const legacy = mq as LegacyMQ;
+    if (typeof mq.addEventListener === "function") {
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    } else if (typeof legacy.addListener === "function" && typeof legacy.removeListener === "function") {
+      legacy.addListener(onChange);
+      return () => legacy.removeListener?.(onChange);
+    }
+    return () => {
+      // peramban tanpa API listener: tak ada yang perlu dibersihkan
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -162,17 +179,19 @@ export default function SociabuzzFloat() {
 
   return (
     <>
-      <Script
-        src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"
-        strategy="afterInteractive"
-        onLoad={() => {
-          if (isTvRef.current) {
-            hideWidget();
-            return;
-          }
-          drawAndTrack();
-        }}
-      />
+      {isDesktop ? (
+        <Script
+          src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"
+          strategy="afterInteractive"
+          onLoad={() => {
+            if (isTvRef.current) {
+              hideWidget();
+              return;
+            }
+            drawAndTrack();
+          }}
+        />
+      ) : null}
       {/* Pengaman CSS: widget pihak ketiga yang telat inject tetap sembunyi di HP. */}
       <style>{`@media (max-width: 767px){[id*="sociabuzz" i],[class*="sociabuzz" i],[id*="sb-bow" i],[class*="sbow" i],body>iframe[src*="sociabuzz" i]{display:none !important;}}`}</style>
     </>

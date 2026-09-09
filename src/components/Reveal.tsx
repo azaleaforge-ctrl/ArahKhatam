@@ -19,6 +19,10 @@ export default function Reveal({ children, className, delay = 0 }: Props) {
       el.classList.add("is-visible");
       return;
     }
+    if (!("IntersectionObserver" in window)) {
+      el.classList.add("is-visible");
+      return;
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -31,7 +35,20 @@ export default function Reveal({ children, className, delay = 0 }: Props) {
       { threshold: 0.12 }
     );
     io.observe(el);
-    return () => io.disconnect();
+    // Safety-net: bila callback tak fire (observer tak didukung penuh),
+    // paksa tampil agar konten tak terkunci opacity:0.
+    const t = window.setTimeout(() => {
+      el.classList.add("is-visible");
+      try {
+        io.disconnect();
+      } catch {
+        // abaikan
+      }
+    }, 2000);
+    return () => {
+      window.clearTimeout(t);
+      io.disconnect();
+    };
   }, []);
 
   return (

@@ -14,12 +14,14 @@ export default function proxy(request: NextRequest) {
   const csp = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    "style-src 'self' 'unsafe-inline'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
     "upgrade-insecure-requests",
     `connect-src ${CONNECT_SRC}`,
+    "media-src 'self' https://cdn.equran.id",
   ].join("; ");
 
   const requestHeaders = new Headers(request.headers);

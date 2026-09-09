@@ -28,6 +28,7 @@ export default function BottomNav() {
   // Pantau section landing saja. Quran/Iqro/TV ikut pathname.
   useEffect(() => {
     if (pathname !== "/") return;
+    if (!("IntersectionObserver" in window)) return;
     const obs = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
