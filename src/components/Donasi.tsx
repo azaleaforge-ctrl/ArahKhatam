@@ -69,14 +69,16 @@ export default function Donasi() {
           </div>
         </Reveal>
       </div>
-      <a
-        href={URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed inset-x-3 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 hidden truncate rounded-full bg-[#0B1F1A] px-5 py-3 text-center text-sm font-bold text-[#F6F1E7] shadow-2xl md:block"
-      >
-        Donasi via Sociabuzz
-      </a>
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 hidden justify-center px-3 md:flex">
+        <a
+          href={URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pointer-events-auto inline-flex w-auto max-w-full items-center justify-center overflow-hidden text-ellipsis whitespace-nowrap rounded-full bg-[#0B1F1A] px-5 py-3 text-center text-sm font-bold text-[#F6F1E7] shadow-2xl"
+        >
+          Donasi via Sociabuzz
+        </a>
+      </div>
     </section>
   );
 }
