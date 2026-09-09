@@ -90,8 +90,8 @@ const kunciTanggal = (d: Date) => d.getFullYear() + "-" + pad2(d.getMonth() + 1)
 const ALLOW_DEMO =
   process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "1";
 
-// PIN lokal 1x per sesi untuk aksi sensitif. Bawaan "1234", ubah via NEXT_PUBLIC_TV_PIN.
-const TV_PIN = process.env.NEXT_PUBLIC_TV_PIN || "1234";
+// PIN lokal 1x per sesi untuk aksi sensitif. Bawaan "222026", ubah via NEXT_PUBLIC_TV_PIN.
+const TV_PIN = process.env.NEXT_PUBLIC_TV_PIN || "222026";
 const PIN_KEY = "tv-pin-ok";
 // Koreksi jam server dibatasi ±5 menit; di luar itu (atau offline) pakai jam lokal.
 const OFFSET_MAX_MS = 5 * 60 * 1000;
