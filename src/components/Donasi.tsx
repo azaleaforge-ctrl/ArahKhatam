@@ -73,7 +73,7 @@ export default function Donasi() {
         href={URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed inset-x-3 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 truncate rounded-full bg-[#0B1F1A] px-5 py-3 text-center text-sm font-bold text-[#F6F1E7] shadow-2xl md:hidden"
+        className="fixed inset-x-3 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 hidden truncate rounded-full bg-[#0B1F1A] px-5 py-3 text-center text-sm font-bold text-[#F6F1E7] shadow-2xl md:block"
       >
         Donasi via Sociabuzz
       </a>

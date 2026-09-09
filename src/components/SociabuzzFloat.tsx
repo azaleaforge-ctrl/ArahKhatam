@@ -96,6 +96,15 @@ export default function SociabuzzFloat() {
   };
 
   const drawAndTrack = () => {
+    // Mobile: widget hijau disembunyikan, jadi jangan digambar.
+    try {
+      if (window.matchMedia("(max-width: 767px)").matches) {
+        hideWidget();
+        return;
+      }
+    } catch {
+      // abaikan, lanjut draw seperti biasa
+    }
     let before: Element[] = [];
     try {
       before = Array.from(document.body.children);
@@ -123,6 +132,23 @@ export default function SociabuzzFloat() {
   };
 
   useEffect(() => {
+    // Widget hanya untuk desktop. Pindah ke HP: sembunyikan, kembali ke
+    // desktop: tampilkan lagi.
+    const mq = window.matchMedia("(max-width: 767px)");
+    const onChange = () => {
+      if (mq.matches || isTvRef.current) hideWidget();
+      else {
+        restoreWidget();
+        if (window.sbBoW) drawAndTrack();
+      }
+    };
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (isTv) {
       hideWidget();
       // Sapu susulan: skrip bisa inject terlambat saat pindah ke /tv.
@@ -135,16 +161,20 @@ export default function SociabuzzFloat() {
   }, [isTv]);
 
   return (
-    <Script
-      src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"
-      strategy="afterInteractive"
-      onLoad={() => {
-        if (isTvRef.current) {
-          hideWidget();
-          return;
-        }
-        drawAndTrack();
-      }}
-    />
+    <>
+      <Script
+        src="https://storage.sociabuzz.com/storage/js/main/buttononwebsite/index.min.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          if (isTvRef.current) {
+            hideWidget();
+            return;
+          }
+          drawAndTrack();
+        }}
+      />
+      {/* Pengaman CSS: widget pihak ketiga yang telat inject tetap sembunyi di HP. */}
+      <style>{`@media (max-width: 767px){[id*="sociabuzz" i],[class*="sociabuzz" i],[id*="sb-bow" i],[class*="sbow" i],body>iframe[src*="sociabuzz" i]{display:none !important;}}`}</style>
+    </>
   );
 }

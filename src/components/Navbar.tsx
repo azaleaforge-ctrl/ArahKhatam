@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ripple } from "./fx";
 
+const DONASI_URL = process.env.NEXT_PUBLIC_SOCIABUZZ_URL ?? "https://sociabuzz.com/azaleaforge15/tribe";
 const LINKS = [
   { href: "/#jadwal", label: "Jadwal" },
   { href: "/#bulanan", label: "Bulanan" },
@@ -16,7 +17,6 @@ const LINKS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -29,7 +29,7 @@ export default function Navbar() {
     <header
       className={
         "fixed inset-x-0 top-0 z-50 border-b transition-colors " +
-        (scrolled || open
+        (scrolled
           ? "border-white/[0.06] bg-[#0B1F1A]/90 shadow-lg backdrop-blur-xl"
           : "border-transparent bg-[#0B1F1A]/60 backdrop-blur-xl")
       }
@@ -72,35 +72,17 @@ export default function Navbar() {
           </a>
         </div>
         <div className="flex shrink-0 items-center md:hidden">
-          <div className="relative">
-            <button
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-label="Buka menu"
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/10 text-[#F6F1E7] transition hover:bg-white/15"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
-                {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-              </svg>
-            </button>
-            {open && (
-              <div className="absolute right-0 top-[44px] w-[220px] overflow-hidden rounded-[20px] border border-white/10 bg-[#0B1F1A] p-2 shadow-2xl">
-                {LINKS.map((l) => (
-                  <a
-                    key={l.href}
-                    href={l.href}
-                    onClick={() => setOpen(false)}
-                    className="block min-h-[44px] rounded-xl px-4 py-3 text-sm font-semibold text-[#F6F1E7] hover:bg-white/10"
-                  >
-                    {l.label}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
+          <a
+            href={DONASI_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={ripple}
+            className="ripple-host pressable inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#E8A33D] px-4 text-[13px] font-bold tracking-tight text-[#0B1F1A] hover:brightness-105"
+          >
+            Donasi
+          </a>
         </div>
       </nav>
-      {open && <div className="fixed inset-0 -z-10 md:hidden" onClick={() => setOpen(false)} />}
     </header>
   );
 }

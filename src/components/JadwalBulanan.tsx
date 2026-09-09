@@ -100,9 +100,13 @@ export default function JadwalBulanan({ cityId }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, lihatBulanIni, nowTick]);
 
-  // Bawa baris hari ini ke tengah layar begitu data termuat.
+  // Bawa baris hari ini ke tengah layar hanya bila user memang membuka
+  // jangkar bulanan (#bulanan). Tanpa ini halaman landing selalu tertarik
+  // ke "Tren 30 hari" begitu data termuat.
   useEffect(() => {
     if (loading || todayIdx < 0) return;
+    const hash = window.location.hash;
+    if (hash !== "#bulanan" && hash !== "#tren-hari-ini") return;
     const t = window.setTimeout(() => {
       try {
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
