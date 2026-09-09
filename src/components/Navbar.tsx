@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { ripple } from "./fx";
 
 const DONASI_URL = process.env.NEXT_PUBLIC_SOCIABUZZ_URL ?? "https://sociabuzz.com/azaleaforge15/tribe";
@@ -36,9 +37,7 @@ export default function Navbar() {
     >
       <nav className="mx-auto flex h-[64px] w-full max-w-[680px] items-center justify-between gap-2 px-4 md:max-w-6xl md:px-6">
         <a href="/#atas" className="flex min-w-0 flex-1 items-center gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#E8A33D] font-display text-[16px] font-bold text-[#0B1F1A]">
-            A
-          </span>
+          <Image src="/arahkhatam_logo_B2.png" alt="ArahKhatam" width={36} height={36} className="h-9 w-9 rounded-full object-cover" priority />
           <span className="min-w-0 flex-1 leading-none">
             <span className="flex min-w-0 items-baseline gap-1">
               <span className="font-display block truncate text-[17px] font-bold tracking-tight text-[#F6F1E7]">

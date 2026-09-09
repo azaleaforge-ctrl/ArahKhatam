@@ -269,3 +269,62 @@ section {
     scroll-margin-top: 96px;
   }
 }
+
+/* Splash Bismillah: logo fade-scale-in, kata Arab staggered fade-rise,
+   keluar fade + scale + blur 700ms. Hormati prefers-reduced-motion. */
+@keyframes bismillah-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bismillah-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bismillah-shell {
+  transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+}
+
+.bismillah-leaving {
+  opacity: 0;
+  transform: scale(1.05);
+  filter: blur(8px);
+}
+
+.bismillah-logo {
+  animation: bismillah-logo-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.bismillah-word {
+  display: inline-block;
+  opacity: 0;
+  animation: bismillah-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bismillah-logo,
+  .bismillah-word {
+    animation: none;
+    opacity: 1;
+  }
+  .bismillah-shell {
+    transition: opacity 0.2s ease;
+  }
+  .bismillah-leaving {
+    transform: none;
+    filter: none;
+  }
+}

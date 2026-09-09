@@ -7,6 +7,7 @@ import type { JadwalResponse, JadwalSholat, KotaItem, PrayerKey } from "@/lib/ap
 import { DEFAULT_CITIES } from "@/lib/cities";
 import { formatHijriah } from "@/lib/qibla";
 import SafeImage from "@/components/SafeImage";
+import { useScreenWakeLock } from "@/hooks/useScreenWakeLock";
 
 const PRESETS = [
   { src: "/media/masjid-agung-bandung.jpg", label: "Masjid Agung" },
@@ -215,6 +216,7 @@ export default function TvPage() {
   const pendingAksi = useRef<(() => void) | null>(null);
   const modeRef = useRef(mode);
   modeRef.current = mode;
+  const { locked: wakeLocked } = useScreenWakeLock(mode === "display");
 
   // Hormati prefers-reduced-motion: matikan animasi denyut/transisi.
   useEffect(() => {
@@ -951,6 +953,7 @@ export default function TvPage() {
             </div>
             <p className="max-w-[240px] text-right text-xs leading-relaxed text-[#F6F1E7]/60 max-md:hidden">
               Tekan ESC / tombol Kembali pada remote untuk keluar
+              {wakeLocked && <span className="mt-1 block text-[#E8A33D]/80">● Layar tetap menyala</span>}
             </p>
           </div>
 
