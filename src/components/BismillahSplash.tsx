@@ -15,12 +15,9 @@ const ARAB_WORDS = ["بِسْمِ", "اللَّهِ", "الرَّحْمَٰنِ"
 
 export default function BismillahSplash({ onDone }: { onDone: () => void }) {
   const [phase, setPhase] = useState<"show" | "leaving" | "gone">("show");
-  const [blocked, setBlocked] = useState(false);
   const [durationMs, setDurationMs] = useState(FALLBACK_MS);
   const [barOn, setBarOn] = useState(false);
-  const [animKey, setAnimKey] = useState(0);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const finishTimer = useRef<number | null>(null);
   const rafIds = useRef<number[]>([]);
   const finished = useRef(false);
@@ -46,7 +43,6 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
   );
 
   // Nyalakan progress bar di frame berikut agar transisi 0 -> 100% jalan.
-  // Dipanggil dari event handler (replay) dan dijadwalkan async dari effect.
   const turnBarOn = useCallback(() => {
     rafIds.current.push(
       window.requestAnimationFrame(() => {
@@ -55,14 +51,8 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
     );
   }, []);
 
-  const restartBar = useCallback(() => {
-    setBarOn(false);
-    turnBarOn();
-  }, [turnBarOn]);
-
   useEffect(() => {
     const audio = new Audio("/sfx/bismillah.mp3");
-    audioRef.current = audio;
     audio.preload = "auto";
 
     const onMeta = () => {
@@ -79,10 +69,17 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
     armFinish(FALLBACK_MS);
     turnBarOn();
 
-    void audio.play().catch((err: unknown) => {
-      const name = err instanceof DOMException ? err.name : "";
-      if (name === "NotAllowedError") setBlocked(true);
-      // Tanpa suara pun splash tetap lanjut dengan durasi fallback.
+    // Otomatis sekali jalan: coba putar langsung. Bila browser menahan
+    // autoplay, suara menyusul di interaksi pertama tanpa mengulang visual.
+    const unlock = () => {
+      void audio.play().catch(() => {});
+    };
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("touchend", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+
+    void audio.play().catch(() => {
+      // Visual tetap sekali jalan dengan durasi fallback.
     });
 
     // Kunci scroll selama splash tampil.
@@ -90,6 +87,9 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
     document.body.style.overflow = "hidden";
 
     return () => {
+      window.removeEventListener("pointerdown", unlock);
+      window.removeEventListener("touchend", unlock);
+      window.removeEventListener("keydown", unlock);
       audio.pause();
       audio.removeEventListener("loadedmetadata", onMeta);
       audio.removeEventListener("ended", onEnded);
@@ -101,27 +101,6 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
   }, [armFinish, finish, turnBarOn]);
 
   if (phase === "gone") return null;
-
-  const replayWithSound = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    try {
-      audio.currentTime = 0;
-    } catch {
-      // abaikan, langsung coba putar
-    }
-    void audio
-      .play()
-      .then(() => {
-        setBlocked(false);
-        setAnimKey((k) => k + 1);
-        restartBar();
-        armFinish(durationMs);
-      })
-      .catch(() => {
-        // tetap diblokir, biarkan tombol tampil
-      });
-  };
 
   return (
     <div
@@ -151,7 +130,7 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
         }}
       />
 
-      <div key={animKey} className="relative flex flex-col items-center px-6 text-center">
+      <div className="relative flex flex-col items-center px-6 text-center">
         <Image
           src="/arahkhatam_logo_B2.png"
           alt="Logo ArahKhatam"
@@ -190,16 +169,6 @@ export default function BismillahSplash({ onDone }: { onDone: () => void }) {
             }}
           />
         </div>
-
-        {blocked && (
-          <button
-            type="button"
-            onClick={replayWithSound}
-            className="pressable mt-5 rounded-full border border-[#E8A33D]/60 bg-white/10 px-5 py-2.5 text-sm font-bold text-[#F6F1E7] backdrop-blur-sm hover:bg-white/20"
-          >
-            Ketuk untuk memutar suara
-          </button>
-        )}
       </div>
     </div>
   );
