@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { ripple } from "./fx";
 
-const DONASI_URL = process.env.NEXT_PUBLIC_SOCIABUZZ_URL ?? "https://sociabuzz.com/azaleaforge15/tribe";
 const LINKS = [
   { href: "/#jadwal", label: "Jadwal" },
   { href: "/#bulanan", label: "Bulanan" },
@@ -72,16 +71,7 @@ export default function Navbar() {
             Dukung
           </a>
         </div>
-        <div className="flex shrink-0 items-center gap-2 md:hidden">
-          <a
-            href={DONASI_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={ripple}
-            className="ripple-host pressable inline-flex h-9 shrink-0 items-center justify-center rounded-full bg-[#E8A33D] px-4 text-[13px] font-bold tracking-tight text-[#0B1F1A]"
-          >
-            Donasi
-          </a>
+        <div className="flex shrink-0 items-center md:hidden">
           <div className="relative">
             <button
               onClick={() => setOpen((v) => !v)}
@@ -95,15 +85,6 @@ export default function Navbar() {
             </button>
             {open && (
               <div className="absolute right-0 top-[44px] w-[220px] overflow-hidden rounded-[20px] border border-white/10 bg-[#0B1F1A] p-2 shadow-2xl">
-                <a
-                  href={DONASI_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-xl px-4 py-3 text-sm font-semibold text-[#F6F1E7]/80 hover:bg-white/10"
-                  onClick={() => setOpen(false)}
-                >
-                  Sedekah semampunya
-                </a>
                 {LINKS.map((l) => (
                   <a
                     key={l.href}

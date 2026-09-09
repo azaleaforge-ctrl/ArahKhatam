@@ -132,14 +132,14 @@ export default function KiblatCompass({ cityId }: Props) {
   const jarum = live ? (deg - (heading as number) + 360) % 360 : deg;
 
   return (
-    <section id="kiblat" className="stars relative overflow-hidden bg-[#0B1F1A] py-8 md:py-24">
+    <section id="kiblat" className="stars relative overflow-x-clip bg-[#0B1F1A] py-8 md:py-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-10 h-[420px] w-[720px] max-w-full -translate-x-1/2 rounded-full opacity-50"
+        className="pointer-events-none absolute left-1/2 top-10 h-[420px] w-[720px] max-w-[100vw] -translate-x-1/2 rounded-full opacity-50"
         style={{ background: "radial-gradient(closest-side, rgba(232,163,61,0.35), transparent)" }}
       />
-      <div className="relative mx-auto grid w-full max-w-[680px] gap-6 px-4 md:max-w-6xl md:grid-cols-2 md:items-center md:gap-10 md:px-6">
-        <Reveal>
+      <div className="relative mx-auto grid w-full max-w-[680px] min-w-0 grid-cols-1 gap-6 px-4 md:max-w-6xl md:grid-cols-2 md:items-center md:gap-10 md:px-6">
+        <Reveal className="min-w-0">
           <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E8A33D]">KOMPAS KIBLAT</p>
           <h2 className="font-display mt-2 text-[1.65rem] leading-tight tracking-tight text-[#F6F1E7] md:text-5xl">
             Hadap Kakbah dengan yakin.
@@ -162,23 +162,23 @@ export default function KiblatCompass({ cityId }: Props) {
               </button>
             ))}
           </div>
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <label className="block">
+          <div className="mt-5 grid min-w-0 grid-cols-2 gap-3">
+            <label className="block min-w-0">
               <span className="text-xs font-bold text-[#F6F1E7]/70">LATITUDE</span>
               <input
                 value={lat}
                 onChange={(e) => setLat(e.target.value)}
                 inputMode="decimal"
-                className="mt-1 min-h-[44px] w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#E8A33D] focus:outline-none md:min-h-0"
+                className="mt-1 min-h-[48px] w-full min-w-0 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#E8A33D] focus:outline-none"
               />
             </label>
-            <label className="block">
+            <label className="block min-w-0">
               <span className="text-xs font-bold text-[#F6F1E7]/70">LONGITUDE</span>
               <input
                 value={lon}
                 onChange={(e) => setLon(e.target.value)}
                 inputMode="decimal"
-                className="mt-1 min-h-[44px] w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#E8A33D] focus:outline-none md:min-h-0"
+                className="mt-1 min-h-[48px] w-full min-w-0 rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm text-white focus:border-[#E8A33D] focus:outline-none"
               />
             </label>
           </div>
@@ -196,9 +196,9 @@ export default function KiblatCompass({ cityId }: Props) {
           {status && <p className="mt-3 text-sm text-[#E8A33D]">{status}</p>}
         </Reveal>
 
-        <Reveal delay={120}>
-          <div className="mx-auto w-full max-w-sm rounded-[20px] border border-white/10 bg-white/[0.06] p-5 text-center md:p-8 md:backdrop-blur-md">
-            <div className="mb-5 inline-flex rounded-full bg-white/10 p-1" role="tablist" aria-label="Mode kompas">
+        <Reveal delay={120} className="min-w-0">
+          <div className="mx-auto w-full min-w-0 max-w-full overflow-hidden rounded-[20px] border border-white/10 bg-white/[0.06] p-4 text-center min-[375px]:p-5 min-[420px]:max-w-sm md:p-8 md:backdrop-blur-md">
+            <div className="mx-auto mb-5 grid w-full max-w-[280px] grid-cols-2 gap-1 rounded-full bg-white/10 p-1 md:inline-flex md:w-auto" role="tablist" aria-label="Mode kompas">
               <button
                 role="tab"
                 aria-selected={mode === "manual"}
@@ -207,7 +207,7 @@ export default function KiblatCompass({ cityId }: Props) {
                   matikanKompas();
                 }}
                 className={
-                  "pressable min-h-[44px] rounded-full px-5 py-2 text-sm font-bold md:min-h-0 " +
+                  "pressable inline-flex min-h-[48px] items-center justify-center rounded-full px-5 py-2 text-sm font-bold " +
                   (mode === "manual" ? "bg-[#E8A33D] text-[#0B1F1A]" : "text-[#F6F1E7]/80 hover:bg-white/10")
                 }
               >
@@ -221,14 +221,14 @@ export default function KiblatCompass({ cityId }: Props) {
                   if (mode !== "live") void aktifkanKompas();
                 }}
                 className={
-                  "pressable min-h-[44px] rounded-full px-5 py-2 text-sm font-bold md:min-h-0 " +
+                  "pressable inline-flex min-h-[48px] items-center justify-center rounded-full px-5 py-2 text-sm font-bold " +
                   (mode === "live" ? "bg-[#E8A33D] text-[#0B1F1A]" : "text-[#F6F1E7]/80 hover:bg-white/10")
                 }
               >
                 Kompas HP
               </button>
             </div>
-            <div className="relative mx-auto h-60 w-60 min-[380px]:h-64 min-[380px]:w-64">
+            <div className="relative mx-auto h-52 w-52 max-w-full min-[375px]:h-60 min-[375px]:w-60">
               <div className="absolute inset-0 rounded-full border-2 border-[#E8A33D]/50" />
               <div className="absolute inset-3 rounded-full border border-white/15" />
               {[
@@ -250,7 +250,7 @@ export default function KiblatCompass({ cityId }: Props) {
                 <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F6F1E7]" />
               </div>
             </div>
-            <p className="font-display mt-6 text-5xl text-[#F6F1E7]">{deg.toFixed(2)}°</p>
+            <p className="font-display mt-6 min-w-0 break-words text-4xl tabular-nums text-[#F6F1E7] min-[375px]:text-5xl">{deg.toFixed(2)}°</p>
             {live && <p className="mt-1 text-xs text-[#F6F1E7]/60">Arah HP: {(heading as number).toFixed(0)}°</p>}
             <p className="mt-1 text-sm font-bold text-[#E8A33D]">{compassLabel(deg)}</p>
             {mode === "live" && (
@@ -259,7 +259,7 @@ export default function KiblatCompass({ cityId }: Props) {
               </p>
             )}
             {liveMsg && <p className="mt-2 text-xs text-[#E8A33D]">{liveMsg}</p>}
-            <p className="mt-2 text-xs text-[#F6F1E7]/60">
+            <p className="mt-2 min-w-0 break-all text-xs text-[#F6F1E7]/60">
               {lat}, {lon} menuju Kakbah
             </p>
           </div>

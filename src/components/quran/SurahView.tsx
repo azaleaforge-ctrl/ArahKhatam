@@ -555,7 +555,7 @@ export default function SurahView({ detail }: Props) {
         })}
       </ol>
 
-      <div className="cta-atas-nav mt-6 min-w-0 rounded-3xl border border-white/10 bg-[#0B1F1A]/95 p-5 shadow-2xl backdrop-blur-md md:p-6 max-md:rounded-2xl max-md:p-4">
+      <div className="mt-6 min-w-0 rounded-3xl border border-white/10 bg-[#0B1F1A] p-5 shadow-2xl md:p-6 max-md:rounded-2xl max-md:p-4">
         <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <p className="font-display text-xl text-[#F6F1E7]">
             {done ? "Surah ini sudah selesai." : "Sudah selesai membaca surah ini?"}

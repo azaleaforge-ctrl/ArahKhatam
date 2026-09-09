@@ -56,10 +56,10 @@ export default function JilidView({ jilid }: Props) {
   };
 
   return (
-    <main>
-      <section className="relative overflow-hidden pt-28 pb-10 md:pt-36" style={{ background: jilid.cover }}>
+    <main className="min-w-0 overflow-x-clip">
+      <section className="relative overflow-hidden pt-28 pb-8 md:pt-36 md:pb-10" style={{ background: jilid.cover }}>
         <div className="kawung-dark absolute inset-0" aria-hidden="true" />
-        <div className="relative mx-auto max-w-6xl px-5">
+        <div className="relative mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-6xl md:px-6">
           <Reveal>
             <Link href="/iqro" className="text-xs font-bold tracking-[0.25em] opacity-80" style={{ color: jilid.coverText }}>
               KEMBALI KE DAFTAR JILID
@@ -117,8 +117,8 @@ export default function JilidView({ jilid }: Props) {
         </div>
       </section>
 
-      <section className="bg-[#F6F1E7] py-10 md:py-14">
-        <div className="mx-auto max-w-6xl space-y-8 px-5">
+      <section className="bg-[#F6F1E7] py-8 md:py-14">
+        <div className="mx-auto w-full max-w-[680px] min-w-0 space-y-6 px-4 md:max-w-6xl md:space-y-8 md:px-6">
           {jilid.pelajaran.map((pel, idx) => {
             const isDone = done.includes(pel.id);
             return (
@@ -143,7 +143,7 @@ export default function JilidView({ jilid }: Props) {
                       {isDone ? "Selesai (manual), batalkan" : "Tandai selesai (manual)"}
                     </button>
                   </div>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="mt-4 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {pel.items.map((it) => {
                       const key = pel.id + it.arab + it.latin;
                       const shown = !hideLatin || peek[key];
@@ -154,7 +154,7 @@ export default function JilidView({ jilid }: Props) {
                             aria-label={"Dengar bacaan " + it.latin}
                             className="tombol-suara pressable block w-full min-w-0 cursor-pointer touch-manipulation select-none"
                           >
-                            <span className="font-arab block min-w-0 text-5xl leading-[2] break-words text-[#0B1F1A] md:text-6xl" dir="rtl" lang="ar">
+                            <span className="font-arab block min-w-0 max-w-full text-4xl leading-[2] break-words text-[#0B1F1A] min-[375px]:text-5xl md:text-6xl" dir="rtl" lang="ar">
                               {it.arab}
                             </span>
                           </button>
@@ -175,7 +175,7 @@ export default function JilidView({ jilid }: Props) {
                                   ripple(e);
                                   setPeek((p) => ({ ...p, [key]: true }));
                                 }}
-                                className="pressable rounded-full border border-[#0B1F1A]/20 px-4 py-1.5 text-xs font-bold text-[#0B1F1A]/70"
+                                className="pressable inline-flex min-h-[44px] items-center rounded-full border border-[#0B1F1A]/20 px-4 py-1.5 text-xs font-bold text-[#0B1F1A]/70"
                               >
                                 Intip latin
                               </button>
@@ -184,7 +184,7 @@ export default function JilidView({ jilid }: Props) {
                           {hideLatin && peek[key] && (
                             <button
                               onClick={() => setPeek((p) => ({ ...p, [key]: false }))}
-                              className="mt-1 text-xs font-semibold text-[#0B1F1A]/50 hover:text-[#0B1F1A]"
+                              className="mt-1 inline-flex min-h-[44px] items-center text-xs font-semibold text-[#0B1F1A]/50 hover:text-[#0B1F1A]"
                             >
                               Sembunyi lagi
                             </button>

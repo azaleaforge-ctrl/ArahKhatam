@@ -57,11 +57,11 @@ export default async function SurahPage({ params }: { params: Promise<{ nomor: s
   }
 
   return (
-    <main>
+    <main className="min-w-0 overflow-x-clip">
       <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-10 md:pt-36 md:pb-14">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] -translate-x-1/2 rounded-full opacity-50"
+          className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] max-w-[100vw] -translate-x-1/2 rounded-full opacity-50"
           style={{ background: "radial-gradient(closest-side, rgba(232,163,61,0.4), transparent)" }}
         />
         <div className="relative mx-auto max-w-4xl px-5 text-center">

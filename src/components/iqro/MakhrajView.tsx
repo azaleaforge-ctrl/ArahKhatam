@@ -46,14 +46,14 @@ export default function MakhrajView({ makhraj, utama }: Props) {
   }, [makhraj, filter, q]);
 
   return (
-    <main>
-      <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-10 md:pt-36 md:pb-14">
+    <main className="min-w-0 overflow-x-clip">
+      <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-8 md:pt-36 md:pb-14">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] -translate-x-1/2 rounded-full opacity-50"
+          className="pointer-events-none absolute -top-24 left-1/2 h-[380px] w-[700px] max-w-[100vw] -translate-x-1/2 rounded-full opacity-50"
           style={{ background: "radial-gradient(closest-side, rgba(232,163,61,0.4), transparent)" }}
         />
-        <div className="relative mx-auto max-w-6xl px-5">
+        <div className="relative mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-6xl md:px-6">
           <Reveal>
             <a href="/iqro" className="text-xs font-bold tracking-[0.25em] text-[#E8A33D]">
               KEMBALI KE BELAJAR IQRO
@@ -69,8 +69,8 @@ export default function MakhrajView({ makhraj, utama }: Props) {
         </div>
       </section>
 
-      <section className="bg-[#F6F1E7] py-10 md:py-14">
-        <div className="mx-auto max-w-6xl px-5">
+      <section className="bg-[#F6F1E7] py-8 md:py-14">
+        <div className="mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-6xl md:px-6">
           <div className="flex flex-wrap gap-2">
             {(["Semua", ...utama.map((u) => u.nama)] as const).map((f) => (
               <button
@@ -99,7 +99,7 @@ export default function MakhrajView({ makhraj, utama }: Props) {
             className="mt-3 w-full rounded-2xl border border-[#0B1F1A]/15 bg-white px-5 py-3 text-sm text-[#0B1F1A] placeholder:text-[#0B1F1A]/40 focus:border-[#E8A33D] focus:outline-none max-md:min-h-[56px] max-md:text-base"
           />
           <p className="mt-2 text-xs text-[#0B1F1A]/55">Menampilkan {filtered.length} huruf.</p>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {filtered.map((m) => (
               <div key={m.huruf + m.nama} className="lift min-w-0 rounded-3xl border border-[#0B1F1A]/10 bg-[#fffdf7] p-5 max-md:rounded-2xl max-md:p-4">
                 <div className="flex min-w-0 flex-wrap items-center gap-3">

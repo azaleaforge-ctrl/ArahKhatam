@@ -162,10 +162,10 @@ export default function UjianView({ jilid }: Props) {
   };
 
   return (
-    <main>
-      <section className="relative overflow-hidden pt-28 pb-10 md:pt-36" style={{ background: jilid.cover }}>
+    <main className="min-w-0 overflow-x-clip">
+      <section className="relative overflow-hidden pt-28 pb-8 md:pt-36 md:pb-10" style={{ background: jilid.cover }}>
         <div className="kawung-dark absolute inset-0" aria-hidden="true" />
-        <div className="relative mx-auto max-w-3xl px-5 text-center">
+        <div className="relative mx-auto w-full max-w-3xl min-w-0 px-4 text-center">
           <Reveal>
             <Link href={"/iqro/" + jilid.jilid} className="text-xs font-bold tracking-[0.25em] opacity-80" style={{ color: jilid.coverText }}>
               KEMBALI KE JILID {jilid.jilid}
@@ -182,7 +182,7 @@ export default function UjianView({ jilid }: Props) {
       </section>
 
       <section className="bg-[#0B1F1A] py-8 md:py-12">
-        <div className="mx-auto max-w-3xl min-w-0 px-5">
+        <div className="mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-3xl md:px-6">
           <Reveal>
             <div className="rounded-3xl border border-[#E8A33D]/40 bg-[#0E2A22] p-6 max-md:p-4 md:p-8">
               {!selesai && current ? (
@@ -196,7 +196,7 @@ export default function UjianView({ jilid }: Props) {
                       style={{ width: Math.round((qi / soal.length) * 100) + "%" }}
                     />
                   </div>
-                  <p className="font-arab mt-4 min-w-0 text-center text-5xl leading-[2] break-words text-[#F6F1E7] max-md:px-2" dir="rtl" lang="ar">
+                  <p className="font-arab mt-4 min-w-0 max-w-full text-center text-4xl leading-[2] break-words text-[#F6F1E7] min-[375px]:text-5xl max-md:px-2" dir="rtl" lang="ar">
                     {current.arab}
                   </p>
                   <p className="mt-2 text-center text-sm text-[#F6F1E7]/70">
@@ -234,16 +234,16 @@ export default function UjianView({ jilid }: Props) {
                     <div>
                       <p className="text-xs font-bold tracking-[0.2em] text-[#E8A33D]">GAGAL MENILAI</p>
                       <p className="mx-auto mt-2 max-w-md text-sm text-[#F6F1E7]/80">{galat}</p>
-                      <div className="mt-5 flex flex-wrap justify-center gap-2">
+                      <div className="mt-5 flex flex-wrap justify-center gap-2 max-md:grid max-md:grid-cols-1">
                         <button
                           onClick={cobaNilaiLagi}
-                          className="pressable rounded-full bg-[#E8A33D] px-6 py-2.5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
+                          className="pressable inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#E8A33D] px-6 py-2.5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
                         >
                           Coba kirim lagi
                         </button>
                         <button
                           onClick={ulangi}
-                          className="pressable rounded-full border border-white/25 px-6 py-2.5 text-sm font-bold text-[#F6F1E7] hover:bg-white/10"
+                          className="pressable inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 px-6 py-2.5 text-sm font-bold text-[#F6F1E7] hover:bg-white/10"
                         >
                           Ulangi ujian
                         </button>

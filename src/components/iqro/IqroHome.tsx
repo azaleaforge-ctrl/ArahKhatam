@@ -27,17 +27,17 @@ export default function IqroHome({ jilids }: Props) {
   const lastLesson = lastJilid?.pelajaran.find((p) => p.id === last?.lessonId) ?? null;
 
   return (
-    <main>
-      <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-12 md:pt-36 md:pb-16">
+    <main className="min-w-0 overflow-x-clip">
+      <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-10 md:pt-36 md:pb-16">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[760px] -translate-x-1/2 rounded-full opacity-50"
+          className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[760px] max-w-[100vw] -translate-x-1/2 rounded-full opacity-50"
           style={{ background: "radial-gradient(closest-side, rgba(232,163,61,0.4), transparent)" }}
         />
-        <div className="relative mx-auto max-w-6xl px-5">
+        <div className="relative mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-6xl md:px-6">
           <Reveal>
-            <p className="text-xs font-bold tracking-[0.25em] text-[#E8A33D]">BELAJAR IQRO</p>
-            <h1 className="font-display mt-2 max-w-2xl text-4xl leading-tight text-[#F6F1E7] md:text-6xl">
+            <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E8A33D]">BELAJAR IQRO</p>
+            <h1 className="font-display mt-2 max-w-2xl text-balance text-[1.9rem] leading-tight tracking-tight text-[#F6F1E7] md:text-6xl">
               Dari huruf tunggal sampai lancar waqaf.
             </h1>
             <p className="mt-4 max-w-2xl text-[#F6F1E7]/75">
@@ -79,13 +79,13 @@ export default function IqroHome({ jilids }: Props) {
         </div>
       </section>
 
-      <section className="bg-[#F6F1E7] py-10 md:py-14">
-        <div className="mx-auto max-w-6xl px-5">
+      <section className="bg-[#F6F1E7] py-8 md:py-14">
+        <div className="mx-auto w-full max-w-[680px] min-w-0 px-4 md:max-w-6xl md:px-6">
           <Reveal>
-            <p className="text-xs font-bold tracking-[0.25em] text-[#0E5E4A]">ENAM JILID</p>
-            <h2 className="font-display mt-2 text-3xl text-[#0B1F1A] md:text-4xl">Pilih jilid belajarmu</h2>
+            <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0E5E4A]">ENAM JILID</p>
+            <h2 className="font-display mt-2 text-[1.65rem] tracking-tight text-[#0B1F1A] md:text-4xl">Pilih jilid belajarmu</h2>
           </Reveal>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3">
             {jilids.map((j, i) => {
               const ids = j.pelajaran.map((p) => p.id);
               const n = ids.filter((id) => done.includes(id)).length;
@@ -135,8 +135,8 @@ export default function IqroHome({ jilids }: Props) {
         </div>
       </section>
 
-      <section className="bg-[#fffdf7] py-10 md:py-14">
-        <div className="mx-auto grid max-w-6xl gap-4 px-5 sm:grid-cols-2">
+      <section className="bg-[#fffdf7] py-8 md:py-14">
+        <div className="mx-auto grid w-full max-w-[680px] min-w-0 grid-cols-1 gap-3 px-4 sm:grid-cols-2 md:max-w-6xl md:gap-4 md:px-6">
           <Reveal>
             <Link
               href="/iqro/makhraj"
