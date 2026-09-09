@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="kawung-dark bg-[#0B1F1A] py-10 text-[#F6F1E7] md:py-12">
-      <div className="mx-auto grid max-w-6xl gap-6 px-5 md:grid-cols-3 md:gap-8">
+    <footer className="kawung-dark bg-[#0B1F1A] py-8 text-[#F6F1E7] md:py-12">
+      <div className="mx-auto grid w-full max-w-[680px] gap-6 px-4 md:max-w-6xl md:grid-cols-3 md:gap-8 md:px-6">
         <div>
           <p className="font-display text-2xl">ArahKhatam</p>
           <p className="mt-1 text-sm text-[#F6F1E7]/60">penunjuk kiblat & khatam harian Indonesia</p>
@@ -31,7 +31,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mx-auto mt-10 max-w-6xl px-5 text-xs text-[#F6F1E7]/50">
+      <div className="mx-auto mt-8 w-full max-w-[680px] px-4 text-xs leading-relaxed text-[#F6F1E7]/50 md:max-w-6xl md:px-6">
         <p>Dibuat dengan teliti di Indonesia. Waktu hijriah bersifat perkiraan (kalender Umm al-Qura).</p>
         <p className="mt-1">Audio basmalah notifikasi dari EQuran.id, qari Misyari Rasyid Al-Afasi.</p>
         <p className="mt-1">Materi Iqro merujuk pada Buku Iqra Cara Cepat Belajar Membaca Al-Quran, KH Asad Humam dan Team Tadarus AMM Yogyakarta.</p>

@@ -5,10 +5,10 @@ import { ripple } from "./fx";
 
 export default function IqroTeaser() {
   return (
-    <section className="bg-[#F6F1E7] pb-6 md:pb-8">
-      <div className="mx-auto max-w-6xl px-5">
+    <section className="bg-[#F6F1E7] py-4 md:pb-8 md:pt-4">
+      <div className="mx-auto w-full max-w-[680px] px-4 md:max-w-6xl md:px-6">
         <Reveal>
-          <article className="lift relative overflow-hidden rounded-[2rem] border border-[#0E5E4A]/20 bg-[#fffdf7] p-6 shadow-none md:p-10">
+          <article className="lift relative overflow-hidden rounded-[20px] border border-[#0E5E4A]/20 bg-[#fffdf7] p-5 min-[375px]:p-6 md:p-10">
             <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
               <div>
                 <p className="text-xs font-bold tracking-[0.25em] text-[#0E5E4A]">BELAJAR IQRO 1 SAMPAI 6</p>
@@ -36,7 +36,7 @@ export default function IqroTeaser() {
               <a
                 href="/iqro"
                 onClick={ripple}
-                className="ripple-host pressable w-full justify-self-start rounded-full bg-[#0E5E4A] px-8 py-3.5 text-center font-bold text-white hover:bg-[#147a5f] md:w-auto md:justify-self-end"
+                className="ripple-host pressable inline-flex min-h-[48px] w-full items-center justify-center justify-self-start rounded-full bg-[#0E5E4A] px-8 py-3.5 text-center font-bold text-white hover:bg-[#147a5f] md:w-auto md:justify-self-end"
               >
                 Buka Belajar Iqro
               </a>

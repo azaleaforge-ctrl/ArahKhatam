@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { kvSet } from "@/lib/db";
+import { clearScheduleCache, kvSet } from "@/lib/db";
 
 // Notifikasi update global. Versi pertama yang terlihat saat boot jadi acuan.
 // Poll tiap 15 detik plus saat tab fokus. Bila versi server beda dari acuan,
@@ -10,9 +10,13 @@ import { kvSet } from "@/lib/db";
 // Isi: judul PEMBARUAN TERSEDIA, teks ajakan refresh, hitung mundur 5 detik
 // lalu hilang otomatis, tanpa reload paksa. Ada tombol Refresh sekarang dan
 // tombol tutup X. SFX basmalah bunyi sekali saat notifikasi muncul.
-// Versi yang sudah hilang tidak dimunculkan lagi sampai ada versi yang beda.
-// Versi terlihat tetap disimpan di IndexedDB agar semua tab ikut sinkron.
+// Versi yang sudah hilang tidak dimunculkan lagi dalam sesi yang sama
+// (sessionStorage), acuan hanya maju saat reload. Versi terlihat tetap
+// disimpan di IndexedDB + mirror localStorage agar semua tab ikut sinkron
+// via BroadcastChannel dan storage event.
 const SEEN_KEY = "versi-terlihat";
+const LS_KEY = "ws:" + SEEN_KEY;
+const BC_NAME = "arahkhatam-update";
 const CDN_FALLBACK =
   "https://cdn.equran.id/audio-partial/Misyari-Rasyid-Al-Afasi/001001.mp3";
 
@@ -41,11 +45,43 @@ function playSfx() {
   }
 }
 
+function readSeenSync(): string | null {
+  try {
+    if (typeof window === "undefined") return null;
+    return window.localStorage.getItem(LS_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function isDismissed(v: string): boolean {
+  try {
+    return sessionStorage.getItem("update-dismissed-" + v) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markDismissed(v: string) {
+  try {
+    sessionStorage.setItem("update-dismissed-" + v, "1");
+  } catch {
+    // abaikan, mode privat
+  }
+}
+
 export default function UpdatePopup() {
   const [version, setVersion] = useState<string | null>(null);
   const [count, setCount] = useState(5);
   const [show, setShow] = useState(false);
   const baseline = useRef<string | null>(null);
+  // Boot sinkron: acuan dibaca dari mirror localStorage agar semua tab/reload satu suara.
+  if (baseline.current === null) {
+    const s = readSeenSync();
+    if (s) baseline.current = s;
+  }
+  const lastShown = useRef<string | null>(null);
+  const bcRef = useRef<BroadcastChannel | null>(null);
   const pathname = usePathname();
   // Di /tv popup tetap muncul tapi bisu agar display masjid tidak berbunyi.
   const bisu = (pathname ?? "").startsWith("/tv");
@@ -69,6 +105,54 @@ export default function UpdatePopup() {
       }
     }
 
+    const announce = async (v: string, broadcast: boolean) => {
+      if (!v || v === baseline.current) return;
+      if (lastShown.current === v) return;
+      if (isDismissed(v)) return;
+      lastShown.current = v;
+      try {
+        await clearScheduleCache();
+      } catch {
+        // abaikan, lanjut walau cache gagal dibersihkan
+      }
+      try {
+        await kvSet(SEEN_KEY, v);
+      } catch {
+        // abaikan, lanjut walau IndexedDB gagal
+      }
+      if (broadcast) {
+        try {
+          bcRef.current?.postMessage({ version: v });
+        } catch {
+          // abaikan
+        }
+      }
+      setVersion(v);
+      setShow(true);
+      if (!bisuRef.current) playSfx();
+    };
+
+    try {
+      const bc = new BroadcastChannel(BC_NAME);
+      bcRef.current = bc;
+      bc.onmessage = (ev) => {
+        try {
+          const v = String((ev.data as { version?: unknown } | null)?.version ?? "");
+          if (v) void announce(v, false);
+        } catch {
+          // abaikan
+        }
+      };
+    } catch {
+      bcRef.current = null;
+    }
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== LS_KEY || !e.newValue) return;
+      void announce(e.newValue, false);
+    };
+    window.addEventListener("storage", onStorage);
+
     let timer: ReturnType<typeof setInterval>;
     const check = async () => {
       try {
@@ -76,19 +160,17 @@ export default function UpdatePopup() {
         const json = await res.json();
         const v = String(json.version ?? "");
         if (!v) return;
-        try {
-          await kvSet(SEEN_KEY, v);
-        } catch {
-          // abaikan, lanjut walau IndexedDB gagal
-        }
         if (baseline.current === null) {
           baseline.current = v;
+          try {
+            await kvSet(SEEN_KEY, v);
+          } catch {
+            // abaikan, lanjut walau IndexedDB gagal
+          }
           return;
         }
         if (v !== baseline.current) {
-          setVersion(v);
-          setShow(true);
-          if (!bisuRef.current) playSfx();
+          await announce(v, true);
         }
       } catch {
         // abaikan, coba lagi pada interval berikut
@@ -109,11 +191,19 @@ export default function UpdatePopup() {
       clearInterval(timer);
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("storage", onStorage);
+      try {
+        bcRef.current?.close();
+      } catch {
+        // abaikan
+      }
+      bcRef.current = null;
     };
   }, []);
 
   // Hitung mundur 5 detik lalu hilang otomatis, tanpa reload paksa.
-  // Acuan maju ke versi ini agar tidak muncul lagi sampai ada versi yang beda.
+  // Acuan TIDAK maju di sini; sesi ini ditandai dismissed agar tidak nagging.
+  // Acuan hanya maju saat reload (boot baca versi baru dari localStorage).
   useEffect(() => {
     if (!show) return;
     setCount(5);
@@ -121,7 +211,7 @@ export default function UpdatePopup() {
       setCount((c) => {
         if (c <= 1) {
           clearInterval(t);
-          if (version) baseline.current = version;
+          if (version) markDismissed(version);
           setShow(false);
           return 0;
         }
@@ -142,7 +232,7 @@ export default function UpdatePopup() {
   }, [show]);
 
   const dismiss = () => {
-    if (version) baseline.current = version;
+    if (version) markDismissed(version);
     setShow(false);
   };
 

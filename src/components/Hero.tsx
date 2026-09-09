@@ -115,7 +115,7 @@ export default function Hero({ cityId, onCityChange }: Props) {
   const activeCity = DEFAULT_CITIES.find((c) => c.id === cityId);
 
   return (
-    <section id="atas" className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-24 pb-10 md:pt-36 md:pb-24">
+    <section id="atas" className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-[88px] pb-8 md:pt-36 md:pb-24">
       <div
         ref={glowRef}
         aria-hidden="true"
@@ -131,60 +131,60 @@ export default function Hero({ cityId, onCityChange }: Props) {
         />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl gap-6 px-5 md:grid-cols-[1.2fr_0.8fr] md:items-center md:gap-10">
-        <div className="order-2 md:order-1">
+      <div className="relative mx-auto grid w-full max-w-[680px] gap-6 px-4 md:max-w-6xl md:grid-cols-[1.2fr_0.8fr] md:items-center md:gap-10 md:px-6">
+        <div className="order-2 min-w-0 md:order-1">
           <Reveal>
-            <p className="inline-flex items-center gap-2 rounded-full border border-[#E8A33D]/40 bg-white/5 px-4 py-1.5 text-xs font-bold tracking-widest text-[#E8A33D]">
+            <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#E8A33D]/40 bg-white/5 px-4 py-1.5 text-[11px] font-bold tracking-[0.14em] text-[#E8A33D]">
               SENJA KHATULISTIWA, DATA KEMENAG RI
             </p>
           </Reveal>
           <Reveal delay={90}>
-            <h1 className="font-display mt-5 text-[1.9rem] leading-[1.08] text-[#F6F1E7] md:text-6xl md:leading-[1.05]">
+            <h1 className="font-display mt-4 text-balance text-[2rem] leading-[1.08] tracking-tight text-[#F6F1E7] md:text-6xl md:leading-[1.05]">
               Waktu sholat akurat, tenang setiap hari.
             </h1>
           </Reveal>
           <Reveal delay={160}>
-            <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-[#F6F1E7]/80 md:text-lg">
+            <p className="mt-4 max-w-xl text-pretty text-[15px] leading-relaxed text-[#F6F1E7]/80 md:mt-5 md:text-lg">
               ArahKhatam adalah web jadwal sholat, kiblat, dan ngaji harian Indonesia. Lihat 8 waktu dalam
               sehari, pantau countdown live ke sholat berikut, cek tren 30 hari, dan arah kiblat
               presisi. Sumber data Kemenag RI via MyQuran, dengan cadangan Aladhan method 20.
             </p>
           </Reveal>
           <Reveal delay={220}>
-            <div className="mt-6 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+            <div className="mt-5 flex flex-col gap-2.5 md:flex-row md:flex-wrap md:items-center">
               <a
                 href="#jadwal"
                 onClick={ripple}
-                className="ripple-host pressable rounded-full bg-[#E8A33D] px-7 py-3 text-center font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
+                className="ripple-host pressable inline-flex min-h-[48px] items-center justify-center rounded-full bg-[#E8A33D] px-7 py-3 text-center text-[15px] font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
               >
                 Lihat jadwal hari ini
               </a>
               <a
                 href="#kiblat"
                 onClick={ripple}
-                className="ripple-host pressable rounded-full border border-white/25 px-7 py-3 text-center font-bold text-[#F6F1E7] hover:bg-white/10"
+                className="ripple-host pressable inline-flex min-h-[48px] items-center justify-center rounded-full border border-white/25 px-7 py-3 text-center text-[15px] font-bold text-[#F6F1E7] hover:bg-white/10"
               >
                 Cek arah kiblat
               </a>
             </div>
           </Reveal>
           <Reveal delay={280}>
-            <p className="mt-6 text-sm text-[#F6F1E7]/70 max-md:mt-5 max-md:rounded-2xl max-md:border max-md:border-white/10 max-md:bg-white/5 max-md:p-3.5 max-md:leading-relaxed">
-              <span className="max-md:mb-1 max-md:block max-md:text-[11px] max-md:font-bold max-md:uppercase max-md:tracking-[0.2em] max-md:text-[#E8A33D]">
+            <p className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-3.5 text-sm leading-relaxed text-[#F6F1E7]/70 md:mt-6 md:border-0 md:bg-transparent md:p-0">
+              <span className="mb-1 block text-[11px] font-bold uppercase tracking-[0.2em] text-[#E8A33D] md:mb-0 md:inline md:text-xs md:normal-case md:tracking-normal md:text-[#F6F1E7]/70">
                 Hijriah hari ini:
               </span>{" "}
-              <span className="font-bold text-[#F6F1E7] max-md:block max-md:text-[15px] max-md:leading-snug" suppressHydrationWarning>
+              <span className="block text-[15px] font-bold leading-snug text-[#F6F1E7] md:inline md:text-sm md:font-normal" suppressHydrationWarning>
                 {hijri || "…"}
               </span>{" "}
-              <span className="opacity-70 max-md:mt-0.5 max-md:block max-md:text-xs">(perkiraan)</span>
+              <span className="mt-0.5 block text-xs opacity-70 md:inline">(perkiraan)</span>
             </p>
           </Reveal>
         </div>
 
-        <Reveal delay={140} className="relative order-1 md:order-2">
-          <div className="rounded-3xl border border-white/15 bg-white/10 p-5 md:bg-white/[0.07] md:p-7 md:backdrop-blur-md">
-            <p className="text-xs font-bold tracking-[0.2em] text-[#E8A33D]">PILIH KOTA</p>
-            <div className="mt-3 flex max-w-full gap-2 overflow-x-auto whitespace-nowrap pb-1 -mx-1 px-1 md:mx-0 md:flex-wrap md:overflow-visible md:whitespace-normal md:px-0 md:pb-0">
+        <Reveal delay={140} className="relative order-1 min-w-0 md:order-2">
+          <div className="rounded-[20px] border border-white/10 bg-[#122e33] p-4 min-[375px]:p-5 md:bg-white/[0.07] md:p-7 md:backdrop-blur-md">
+            <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E8A33D]">PILIH KOTA</p>
+            <div className="scrollbar-hide -mx-1 mt-3 flex max-w-full gap-2 overflow-x-auto whitespace-nowrap px-1 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:whitespace-normal md:px-0 md:pb-0">
               {DEFAULT_CITIES.map((c) => (
                 <button
                   key={c.id}
@@ -192,44 +192,51 @@ export default function Hero({ cityId, onCityChange }: Props) {
                     ripple(e);
                     pick(c.id);
                   }}
+                  aria-pressed={cityId === c.id}
                   className={
-                    "pressable min-h-[44px] shrink-0 rounded-full px-4 py-2 text-sm font-bold md:min-h-0 " +
+                    "pressable min-h-[44px] shrink-0 rounded-full px-4 py-2 text-sm font-bold " +
                     (cityId === c.id
-                      ? "bg-[#E8A33D] text-[#0B1F1A]"
-                      : "bg-white/10 text-[#F6F1E7] hover:bg-white/20")
+                      ? "bg-[#E8A33D] text-[#0B1F1A] shadow-[0_2px_12px_rgba(232,164,74,0.35)]"
+                      : "border border-white/5 bg-white/[0.08] text-white/80 hover:bg-white/15")
                   }
                 >
                   {c.nama.replace("KOTA ", "")}
                 </button>
               ))}
             </div>
-            <div className="mt-4 flex gap-2">
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") doSearch();
-                }}
-                placeholder="Cari kota lain, misal Semarang"
-                className="w-full min-h-[44px] rounded-2xl border border-white/15 bg-[#0B1F1A]/60 px-4 py-2.5 text-sm text-[#F6F1E7] placeholder:text-white/40 focus:border-[#E8A33D] focus:outline-none md:min-h-0"
-              />
-              <button
-                onClick={(e) => {
-                  ripple(e);
-                  doSearch();
-                }}
-                className="ripple-host pressable shrink-0 rounded-2xl bg-[#0E5E4A] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#147a5f]"
-              >
-                {searching ? "..." : "Cari"}
-              </button>
+            <div className="relative mt-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+                <circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" />
+              </svg>
+              <div className="flex gap-2">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") doSearch();
+                  }}
+                  placeholder="Cari kota lain, misal Semarang"
+                  aria-label="Cari kota"
+                  className="h-[44px] w-full min-w-0 rounded-full border border-white/10 bg-[#1a353a] pl-11 pr-4 text-[14px] text-[#F6F1E7] placeholder:text-white/35 focus:border-[#E8A33D]/40 focus:bg-[#1e3d42] focus:outline-none"
+                />
+                <button
+                  onClick={(e) => {
+                    ripple(e);
+                    doSearch();
+                  }}
+                  className="ripple-host pressable h-[44px] shrink-0 rounded-full bg-[#E8A33D] px-5 text-sm font-bold text-[#0B1F1A] hover:brightness-105"
+                >
+                  {searching ? "..." : "Cari"}
+                </button>
+              </div>
             </div>
             {results.length > 0 && (
-              <ul className="mt-3 max-h-44 overflow-auto rounded-2xl border border-white/10 bg-[#0B1F1A] p-1">
+              <ul className="mt-3 max-h-44 overflow-auto rounded-[20px] border border-white/10 bg-[#0B1F1A] p-1">
                 {results.map((r) => (
                   <li key={r.id}>
                     <button
                       onClick={() => pick(r.id)}
-                      className="w-full rounded-xl px-3 py-2 text-left text-sm text-[#F6F1E7] hover:bg-white/10"
+                      className="min-h-[44px] w-full rounded-xl px-3 py-2 text-left text-sm text-[#F6F1E7] hover:bg-white/10"
                     >
                       {r.lokasi} <span className="opacity-50">({r.id})</span>
                     </button>
@@ -238,23 +245,38 @@ export default function Hero({ cityId, onCityChange }: Props) {
               </ul>
             )}
 
-            <div className="mt-6 rounded-2xl bg-[#F6F1E7] p-5 text-[#0B1F1A]">
-              <p className="text-xs font-bold tracking-widest opacity-60">
-                {activeCity ? activeCity.nama : data?.lokasi ?? "MEMUAT"} , MENUJU {next ? LABEL[next.key].toUpperCase() : "..."}
-              </p>
-              <p className="font-display mt-1 text-4xl tabular-nums md:text-5xl">
-                {next ? fmtCountdown(next.diffSec) : "--:--:--"}
-              </p>
-              <p className="mt-2 text-sm opacity-70">
-                {data
-                  ? "Subuh " + data.jadwal.subuh + " , Dzuhur " + data.jadwal.dzuhur + " , Maghrib " + data.jadwal.maghrib
-                  : "Memuat jadwal dari MyQuran..."}
-              </p>
+            <div className="relative mt-4 overflow-hidden rounded-[20px] bg-[#fdf6e7] p-5 text-[#122e33]">
+              <div aria-hidden="true" className="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-[#E8A33D]/15" />
+              <div className="relative">
+                <p className="text-[11px] font-semibold tracking-[0.14em] text-[#122e33]/60">
+                  {activeCity ? activeCity.nama : data?.lokasi ?? "MEMUAT"} , MENUJU {next ? LABEL[next.key].toUpperCase() : "..."}
+                </p>
+                <p className="mt-3 flex items-baseline gap-1">
+                  <span className="font-display text-[46px] font-bold leading-none tracking-tight tabular-nums">
+                    {next ? fmtCountdown(next.diffSec) : "--:--:--"}
+                  </span>
+                  <span className="ml-2 text-[12px] font-medium text-[#122e33]/50">menit lagi</span>
+                </p>
+                <p className="mt-4 flex flex-wrap gap-2 text-[12px] font-medium">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#122e33]/5 px-3 py-1.5">
+                    Subuh {data ? data.jadwal.subuh : "--:--"}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#122e33]/5 px-3 py-1.5">
+                    Dzuhur {data ? data.jadwal.dzuhur : "--:--"}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#E8A33D]/20 px-3 py-1.5 font-bold">
+                    Maghrib {data ? data.jadwal.maghrib : "--:--"}
+                  </span>
+                </p>
+                {!data && (
+                  <p className="mt-2 text-[13px] text-[#122e33]/60">Memuat jadwal dari MyQuran...</p>
+                )}
               {data?.sumber === "aladhan" && (
                 <p className="mt-1 text-xs font-semibold text-[#C05621]">
                   Mode cadangan Aladhan aktif (method Kemenag RI).
                 </p>
               )}
+              </div>
             </div>
           </div>
         </Reveal>

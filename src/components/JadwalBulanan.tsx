@@ -135,31 +135,34 @@ export default function JadwalBulanan({ cityId }: Props) {
   };
 
   return (
-    <section id="bulanan" className="bg-white py-16 md:py-24">
-      <div className="mx-auto max-w-6xl px-5">
+    <section id="bulanan" className="bg-[#F6F1E7] py-8 md:bg-white md:py-24">
+      <div className="mx-auto w-full max-w-[680px] px-0 md:max-w-6xl md:px-6">
+        <div className="px-4 md:px-0">
         <Reveal>
-          <p className="text-xs font-bold tracking-[0.25em] text-[#0E5E4A]">JADWAL BULANAN</p>
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
-            <h2 className="font-display text-3xl text-[#0B1F1A] md:text-5xl">Tren 30 hari penuh.</h2>
-            <div className="flex items-center gap-2">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#0E5E4A]">JADWAL BULANAN</p>
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-[1.65rem] leading-tight tracking-tight text-[#0B1F1A] md:text-5xl">Tren 30 hari penuh.</h2>
+            <div className="flex w-full items-center justify-between gap-2 min-[375px]:w-auto min-[375px]:justify-end">
               <button
                 onClick={(e) => {
                   ripple(e);
                   shift(-1);
                 }}
-                className="ripple-host pressable min-h-[44px] rounded-full border border-[#0B1F1A]/15 px-4 py-2 text-sm font-bold hover:bg-[#F6F1E7] md:min-h-0"
+                aria-label="Bulan lalu"
+                className="ripple-host pressable inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#0B1F1A]/15 px-4 py-2 text-sm font-bold hover:bg-white"
               >
-                earlier
+                ‹ Lalu
               </button>
-              <span className="min-w-36 text-center text-sm font-bold capitalize">{monthName}</span>
+              <span className="min-w-[7rem] flex-1 text-center text-[13px] font-bold capitalize min-[375px]:flex-none">{monthName}</span>
               <button
                 onClick={(e) => {
                   ripple(e);
                   shift(1);
                 }}
-                className="ripple-host pressable min-h-[44px] rounded-full border border-[#0B1F1A]/15 px-4 py-2 text-sm font-bold hover:bg-[#F6F1E7] md:min-h-0"
+                aria-label="Bulan depan"
+                className="ripple-host pressable inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full border border-[#0B1F1A]/15 px-4 py-2 text-sm font-bold hover:bg-white"
               >
-                later
+                Depan ›
               </button>
             </div>
           </div>
@@ -181,64 +184,62 @@ export default function JadwalBulanan({ cityId }: Props) {
           )}
         </Reveal>
         <Reveal delay={100}>
-          <div className="mt-6 overflow-x-auto rounded-3xl border border-[#0B1F1A]/10 shadow-none md:shadow-[0_18px_40px_-28px_rgba(11,31,26,0.5)]">
-            <table className="w-full min-w-[760px] border-collapse bg-white text-sm">
-              <thead>
-                <tr className="bg-[#0B1F1A] text-left text-[#F6F1E7]">
-                  {["Tanggal", "Imsak", "Subuh", "Terbit", "Dhuha", "Dzuhur", "Ashar", "Maghrib", "Isya"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs tracking-wider">
-                      {h.toUpperCase()}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, i) => {
-                  const today = i === todayIdx;
-                  return (
-                    <tr
-                      key={r.tanggal + i}
-                      id={today ? "tren-hari-ini" : undefined}
-                      className={
-                        today
-                          ? "bg-[#E8A33D]/25 shadow-[inset_4px_0_0_0_#C05621]"
-                          : i % 2
-                            ? "bg-[#F6F1E7]/60"
-                            : "bg-white"
-                      }
-                    >
-                      <td className="px-4 py-3 md:py-2.5 font-bold">
-                        <span className="flex items-center gap-2">
-                          <span className={today ? "text-[#C05621]" : ""}>{r.tanggal}</span>
-                          {today && (
-                            <span className="rounded-full bg-[#C05621] px-2.5 py-0.5 text-[11px] font-bold whitespace-nowrap text-white">
-                              Hari ini
-                            </span>
-                          )}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 md:py-2.5">{r.imsak}</td>
-                      <td className="px-4 py-3 font-semibold md:py-2.5">{r.subuh}</td>
-                      <td className="px-4 py-3 md:py-2.5">{r.terbit}</td>
-                      <td className="px-4 py-3 md:py-2.5">{r.dhuha}</td>
-                      <td className="px-4 py-3 font-semibold md:py-2.5">{r.dzuhur}</td>
-                      <td className="px-4 py-3 md:py-2.5">{r.ashar}</td>
-                      <td className="px-4 py-3 font-semibold text-[#C05621] md:py-2.5">{r.maghrib}</td>
-                      <td className="px-4 py-3 md:py-2.5">{r.isya}</td>
-                    </tr>
-                  );
-                })}
-                {!loading && rows.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-4 py-8 text-center opacity-60">
-                      Data bulan ini belum tersedia, coba bulan berjalan.
-                    </td>
+          <div className="mx-4 mt-4 overflow-hidden rounded-[20px] border border-white/5 bg-[#23444a] md:mx-0 md:mt-6">
+            <div className="scrollbar-hide overflow-x-auto">
+              <table className="w-full min-w-[520px] border-collapse text-left text-[13px]">
+                <thead>
+                  <tr className="bg-[#1a353a] text-[10px] tracking-[0.12em] text-white/40">
+                    {["Tgl", "Imsak", "Subuh", "Dzuhur", "Ashar", "Maghrib", "Isya"].map((h, idx) => (
+                      <th key={h} className={"px-3 py-3 font-semibold " + (idx === 0 ? "sticky left-0 bg-[#1a353a] pl-4" : idx === 6 ? "pr-4" : "")}>
+                        {h.toUpperCase()}
+                      </th>
+                    ))}
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="font-mono">
+                  {rows.map((r, i) => {
+                    const today = i === todayIdx;
+                    return (
+                      <tr
+                        key={r.tanggal + i}
+                        id={today ? "tren-hari-ini" : undefined}
+                        className={
+                          "border-t border-white/5 " +
+                          (today ? "bg-[#E8A33D]/20 text-white" : i % 2 ? "bg-white/[0.03] text-white/85" : "text-white/85")
+                        }
+                      >
+                        <td className="px-3 py-3 pl-4 font-bold">
+                          <span className="flex items-center gap-2">
+                            <span className={today ? "text-[#E8A33D]" : ""}>{r.tanggal}</span>
+                            {today && (
+                              <span className="whitespace-nowrap rounded-full bg-[#E8A33D] px-2 py-0.5 font-sans text-[10px] font-bold text-[#0B1F1A]">
+                                Hari ini
+                              </span>
+                            )}
+                          </span>
+                        </td>
+                        <td className="px-3 py-3">{r.imsak}</td>
+                        <td className="px-3 py-3">{r.subuh}</td>
+                        <td className="px-3 py-3">{r.dzuhur}</td>
+                        <td className="px-3 py-3">{r.ashar}</td>
+                        <td className="px-3 py-3 font-bold text-[#E8A33D]">{r.maghrib}</td>
+                        <td className="px-3 py-3 pr-4">{r.isya}</td>
+                      </tr>
+                    );
+                  })}
+                  {!loading && rows.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-8 text-center font-sans text-white/60">
+                        Data bulan ini belum tersedia, coba bulan berjalan.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Reveal>
+        </div>
       </div>
     </section>
   );

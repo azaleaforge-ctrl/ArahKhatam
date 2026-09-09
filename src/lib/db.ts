@@ -126,6 +126,20 @@ export async function setCachedCities(payload: unknown): Promise<void> {
   }
 }
 
+// honey: hanya cache jadwal, data user aman (kv/localStorage tidak dihapus).
+export async function clearScheduleCache(): Promise<void> {
+  try {
+    await tx("jadwal", "readwrite", (s) => s.clear());
+  } catch {
+    // abaikan
+  }
+  try {
+    await tx("kota", "readwrite", (s) => s.clear());
+  } catch {
+    // abaikan
+  }
+}
+
 // --- Pelacak bacaan AlQuran, fungsi baru, fungsi lama di atas tidak diubah ---
 
 export type LastRead = {

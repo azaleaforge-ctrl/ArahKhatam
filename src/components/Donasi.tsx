@@ -23,27 +23,27 @@ const REASONS = [
 
 export default function Donasi() {
   return (
-    <section id="donasi" className="relative overflow-hidden bg-[#E8A33D] py-12 md:py-24">
+    <section id="donasi" className="relative overflow-hidden bg-[#E8A33D] py-8 md:py-24">
       <div className="kawung absolute inset-0 opacity-60" aria-hidden="true" />
       <div className="absolute inset-0" aria-hidden="true">
         <div className="absolute inset-0 bg-gradient-to-b from-[#E8A33D] via-[#E8A33D]/85 to-[#C05621]/90" />
         <SafeImage src="/media/sajadah.jpg" alt="" className="h-full w-full object-cover opacity-20" />
       </div>
-      <div className="relative mx-auto max-w-6xl px-5">
+      <div className="relative mx-auto w-full max-w-[680px] px-4 md:max-w-6xl md:px-6">
         <Reveal>
           <p className="text-xs font-bold tracking-[0.25em] text-[#0B1F1A]">DONASI</p>
           <h2 className="font-display mt-2 max-w-2xl text-3xl text-[#0B1F1A] md:text-5xl">
             Jaga web ini tetap gratis dan bebas iklan.
           </h2>
         </Reveal>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid gap-3 md:grid-cols-3 md:gap-4">
           {REASONS.map((r, i) => (
             <Reveal key={r.title} delay={i * 90}>
               <article
                 onMouseMove={tilt}
                 onMouseLeave={tiltReset}
                 onClick={ripple}
-                className="lift ripple-host h-full rounded-3xl bg-[#0B1F1A] p-5 text-[#F6F1E7] shadow-none md:p-6"
+                className="lift ripple-host h-full rounded-[20px] bg-[#0B1F1A] p-5 text-[#F6F1E7] md:p-6"
               >
                 <h3 className="font-display text-xl text-[#E8A33D]">{r.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[#F6F1E7]/80">{r.desc}</p>
@@ -52,7 +52,7 @@ export default function Donasi() {
           ))}
         </div>
         <Reveal delay={140}>
-          <div className="mt-8 flex flex-col items-center gap-3 rounded-3xl bg-[#F6F1E7] p-5 text-center md:flex-row md:justify-between md:p-7 md:text-left">
+          <div className="mt-6 flex flex-col items-center gap-3 rounded-[20px] bg-[#F6F1E7] p-5 text-center md:flex-row md:justify-between md:p-7 md:text-left">
             <div>
               <p className="font-display text-2xl text-[#0B1F1A]">Dukung via Sociabuzz</p>
               <p className="text-sm text-[#0B1F1A]/65">Nominal bebas, bisa sekali atau rutin tiap bulan.</p>
@@ -62,7 +62,7 @@ export default function Donasi() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={ripple}
-              className="ripple-host pressable w-full rounded-full bg-[#C05621] px-8 py-3.5 text-center font-bold text-white hover:bg-[#a8481b] md:w-auto"
+              className="ripple-host pressable inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-[#C05621] px-8 py-3.5 text-center font-bold text-white hover:bg-[#a8481b] md:w-auto"
             >
               Donasi sekarang
             </a>

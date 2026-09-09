@@ -132,23 +132,23 @@ export default function KiblatCompass({ cityId }: Props) {
   const jarum = live ? (deg - (heading as number) + 360) % 360 : deg;
 
   return (
-    <section id="kiblat" className="stars relative overflow-hidden bg-[#0B1F1A] py-12 md:py-24">
+    <section id="kiblat" className="stars relative overflow-hidden bg-[#0B1F1A] py-8 md:py-24">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-10 h-[420px] w-[720px] -translate-x-1/2 rounded-full opacity-50"
+        className="pointer-events-none absolute left-1/2 top-10 h-[420px] w-[720px] max-w-full -translate-x-1/2 rounded-full opacity-50"
         style={{ background: "radial-gradient(closest-side, rgba(232,163,61,0.35), transparent)" }}
       />
-      <div className="relative mx-auto grid max-w-6xl gap-8 px-5 md:grid-cols-2 md:items-center md:gap-10">
+      <div className="relative mx-auto grid w-full max-w-[680px] gap-6 px-4 md:max-w-6xl md:grid-cols-2 md:items-center md:gap-10 md:px-6">
         <Reveal>
-          <p className="text-xs font-bold tracking-[0.25em] text-[#E8A33D]">KOMPAS KIBLAT</p>
-          <h2 className="font-display mt-2 text-3xl text-[#F6F1E7] md:text-5xl">
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-[#E8A33D]">KOMPAS KIBLAT</p>
+          <h2 className="font-display mt-2 text-[1.65rem] leading-tight tracking-tight text-[#F6F1E7] md:text-5xl">
             Hadap Kakbah dengan yakin.
           </h2>
           <p className="mt-3 max-w-lg text-[#F6F1E7]/75">
             Kakbah di 21.422487, 39.826206. Bearing dihitung dengan rumus great circle.
             Dari Jakarta hasilnya 295.15 derajat. Putar badan hingga jarum menunjuk angka itu.
           </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+          <div className="scrollbar-hide -mx-4 mt-5 flex gap-2 overflow-x-auto whitespace-nowrap px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:whitespace-normal md:px-0">
             {DEFAULT_CITIES.map((c) => (
               <button
                 key={c.id}
@@ -156,7 +156,7 @@ export default function KiblatCompass({ cityId }: Props) {
                   ripple(e);
                   useCity(c.id);
                 }}
-                className="pressable min-h-[44px] rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-[#F6F1E7] hover:bg-white/20 md:min-h-0"
+                className="pressable min-h-[44px] shrink-0 rounded-full bg-white/10 px-4 py-2 text-sm font-bold text-[#F6F1E7] hover:bg-white/20"
               >
                 {c.nama.replace("KOTA ", "")}
               </button>
@@ -188,7 +188,7 @@ export default function KiblatCompass({ cityId }: Props) {
                 ripple(e);
                 useGps();
               }}
-              className="ripple-host pressable min-h-[48px] w-full rounded-full bg-[#E8A33D] px-6 py-2.5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558] md:min-h-0 md:w-auto"
+              className="ripple-host pressable inline-flex min-h-[48px] w-full items-center justify-center rounded-full bg-[#E8A33D] px-6 py-2.5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558] md:w-auto"
             >
               Pakai lokasi saya
             </button>
@@ -197,7 +197,7 @@ export default function KiblatCompass({ cityId }: Props) {
         </Reveal>
 
         <Reveal delay={120}>
-          <div className="mx-auto w-full max-w-sm rounded-[2rem] border border-white/15 bg-white/10 p-5 text-center md:bg-white/[0.06] md:p-8 md:backdrop-blur-md">
+          <div className="mx-auto w-full max-w-sm rounded-[20px] border border-white/10 bg-white/[0.06] p-5 text-center md:p-8 md:backdrop-blur-md">
             <div className="mb-5 inline-flex rounded-full bg-white/10 p-1" role="tablist" aria-label="Mode kompas">
               <button
                 role="tab"

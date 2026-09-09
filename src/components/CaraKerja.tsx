@@ -43,8 +43,8 @@ const STEPS = [
 
 export default function CaraKerja() {
   return (
-    <section id="cara" className="bg-[#F6F1E7] py-12 md:py-24">
-      <div className="mx-auto max-w-6xl px-5">
+    <section id="cara" className="bg-[#F6F1E7] py-8 md:py-24">
+      <div className="mx-auto w-full max-w-[680px] px-4 md:max-w-6xl md:px-6">
         <Reveal>
           <p className="text-xs font-bold tracking-[0.25em] text-[#0E5E4A]">CARA KERJA</p>
           <h2 className="font-display mt-2 max-w-2xl text-3xl leading-tight text-[#0B1F1A] md:text-5xl">
@@ -55,24 +55,24 @@ export default function CaraKerja() {
             mengganggu, langsung tampil guna utamanya.
           </p>
         </Reveal>
-        <div className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 -mx-5 px-5 md:mx-0 md:mt-10 md:grid md:snap-none md:gap-5 md:overflow-visible md:pb-0 md:px-0 md:grid-cols-3">
+        <div className="scrollbar-hide -mx-4 mt-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:mt-10 md:grid md:snap-none md:gap-5 md:overflow-visible md:px-0 md:pb-0 md:grid-cols-3">
           {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 100} className="min-w-[80%] snap-center sm:min-w-[60%] md:min-w-0">
+            <Reveal key={s.n} delay={i * 100} className="min-w-[78%] snap-center min-[375px]:min-w-[72%] sm:min-w-[60%] md:min-w-0">
               <article
                 onMouseMove={tilt}
                 onMouseLeave={tiltReset}
                 onClick={ripple}
-                className="lift ripple-host kawung h-full rounded-3xl border border-[#0E5E4A]/15 bg-[#fffdf7] p-6 shadow-none md:p-7 md:shadow-[0_18px_40px_-24px_rgba(11,31,26,0.4)]"
+                className="lift ripple-host kawung h-full rounded-[20px] border border-[#0E5E4A]/15 bg-[#fffdf7] p-5 md:p-7 md:shadow-[0_18px_40px_-24px_rgba(11,31,26,0.4)]"
               >
-                <span className="font-display text-5xl text-[#E8A33D]">{s.n}</span>
-                <h3 className="font-display mt-4 text-2xl text-[#0B1F1A]">{s.title}</h3>
+                <span className="font-display text-[2.5rem] leading-none text-[#E8A33D]">{s.n}</span>
+                <h3 className="font-display mt-3 text-[1.35rem] leading-tight text-[#0B1F1A]">{s.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-[#0B1F1A]/70">{s.desc}</p>
               </article>
             </Reveal>
           ))}
         </div>
         <Reveal delay={120}>
-          <div className="mt-8 rounded-3xl bg-[#0B1F1A] p-6 text-sm leading-relaxed text-[#F6F1E7]/85 md:flex md:items-center md:gap-6 md:p-7">
+          <div className="mt-6 rounded-[20px] bg-[#0B1F1A] p-5 text-sm leading-relaxed text-[#F6F1E7]/85 md:flex md:items-center md:gap-6 md:p-7">
             <span className="inline-block shrink-0 rounded-full bg-[#E8A33D] px-4 py-1.5 text-xs font-bold text-[#0B1F1A]">
               SUMBER DATA
             </span>

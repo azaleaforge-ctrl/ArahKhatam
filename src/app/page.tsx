@@ -17,7 +17,7 @@ export default function Home() {
   const [cityId, setCityId] = useState("1301");
 
   return (
-    <main className="min-h-screen bg-[#F6F1E7] pb-20 md:pb-0">
+    <main className="min-h-screen overflow-x-clip bg-[#F6F1E7] pb-[92px] md:pb-0">
       <Navbar />
       <Hero cityId={cityId} onCityChange={setCityId} />
       <CaraKerja />

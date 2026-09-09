@@ -9,8 +9,8 @@
   --color-kertas: #fffdf7;
   --color-amber-senja: #e8a33d;
   --color-terakota: #c05621;
-  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: var(--font-jakarta), "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), "Fraunces", ui-serif, Georgia, serif;
 }
 
 html {
@@ -37,6 +37,30 @@ section {
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Shell mobile-first: 680px centered di HP, melebar rapi di desktop */
+.landing-shell {
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 768px) {
+  .landing-shell {
+    max-width: 72rem;
+    padding-inline: 1.5rem;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Teks arab, font dimuat di layout quran saja */

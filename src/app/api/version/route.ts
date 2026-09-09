@@ -43,8 +43,23 @@ function devFingerprint(): string {
   }
 }
 
+function prodBuildId(): string {
+  try {
+    const id = fs.readFileSync(path.join(process.cwd(), ".next", "BUILD_ID"), "utf8").trim();
+    if (id) return id.slice(0, 8);
+  } catch {
+    // abaikan, lanjut ke fallback
+  }
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA;
+  if (sha) return sha.slice(0, 8);
+  const env = process.env.NEXT_PUBLIC_APP_VERSION;
+  if (env) return env.slice(0, 8);
+  return APP_VERSION;
+}
+
 export async function GET() {
-  const version = process.env.NODE_ENV === "production" ? APP_VERSION : devFingerprint();
+  const version =
+    process.env.NODE_ENV === "production" ? APP_VERSION + "+" + prodBuildId() : devFingerprint();
   return Response.json(
     { version },
     { headers: { "Cache-Control": "no-store, max-age=0" } }

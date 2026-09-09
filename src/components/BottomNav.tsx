@@ -49,9 +49,9 @@ export default function BottomNav() {
   return (
     <nav
       aria-label="Navigasi utama"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#0B1F1A] pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#0B1F1A]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
     >
-      <div className="grid grid-cols-5">
+      <div className="mx-auto grid w-full max-w-[680px] grid-cols-5">
         {TABS.map((t) => {
           const nyala = aktif === t.id;
           return (
@@ -60,18 +60,20 @@ export default function BottomNav() {
               href={t.href}
               aria-current={nyala ? "page" : undefined}
               className={
-                "relative flex min-h-[60px] flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-bold " +
-                (nyala ? "text-[#E8A33D]" : "text-[#F6F1E7]/60")
+                "relative flex min-h-[60px] flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-[11px] font-medium leading-none tracking-wide " +
+                (nyala ? "font-bold text-[#E8A33D]" : "text-white/50 hover:text-white/80")
               }
             >
               <span
                 aria-hidden="true"
                 className={
-                  "absolute left-1/2 top-0 h-0.5 w-8 -translate-x-1/2 rounded-full bg-[#E8A33D] transition-opacity transition-transform duration-300 " +
+                  "absolute left-1/2 top-0 h-0.5 w-8 -translate-x-1/2 rounded-full bg-[#E8A33D] transition-opacity duration-300 " +
                   (nyala ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0")
                 }
               />
-              <Ikon d={t.icon} />
+              <span className={"grid h-7 w-7 place-items-center rounded-full transition-colors " + (nyala ? "bg-[#E8A33D]/15" : "bg-transparent")}>
+                <Ikon d={t.icon} />
+              </span>
               {t.label}
             </a>
           );

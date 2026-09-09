@@ -6,13 +6,13 @@ import { ripple, tilt, tiltReset } from "./fx";
 
 export default function QuranTeaser() {
   return (
-    <section className="bg-[#F6F1E7] pb-12 md:pb-24">
-      <div className="mx-auto max-w-6xl px-5">
+    <section className="bg-[#F6F1E7] py-4 md:pb-12 md:pt-8">
+      <div className="mx-auto w-full max-w-[680px] px-4 md:max-w-6xl md:px-6">
         <Reveal>
           <article
             onMouseMove={tilt}
             onMouseLeave={tiltReset}
-            className="lift relative overflow-hidden rounded-[2rem] bg-[#0B1F1A] p-6 md:p-12"
+            className="lift relative overflow-hidden rounded-[20px] bg-[#0B1F1A] p-5 min-[375px]:p-6 md:p-12"
           >
             <div className="kawung-dark absolute inset-0" aria-hidden="true" />
             <div
@@ -42,7 +42,7 @@ export default function QuranTeaser() {
               <a
                 href="/quran"
                 onClick={ripple}
-                className="ripple-host pressable w-full justify-self-start rounded-full bg-[#E8A33D] px-8 py-3.5 text-center font-bold text-[#0B1F1A] hover:bg-[#f2b558] md:w-auto md:justify-self-end"
+                className="ripple-host pressable inline-flex min-h-[48px] w-full items-center justify-center justify-self-start rounded-full bg-[#E8A33D] px-8 py-3.5 text-center font-bold text-[#0B1F1A] hover:bg-[#f2b558] md:w-auto md:justify-self-end"
               >
                 Buka AlQuran
               </a>
