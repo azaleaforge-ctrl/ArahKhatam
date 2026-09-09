@@ -36,7 +36,7 @@ export default function Navbar() {
       }
     >
       <nav className="mx-auto flex h-[64px] w-full max-w-[680px] items-center justify-between gap-2 px-4 md:max-w-6xl md:gap-4 md:px-6">
-        <a href="/#atas" className="flex min-w-0 flex-1 items-center gap-3">
+        <a href="/#atas" className="flex min-w-0 flex-none shrink-0 items-center gap-3">
           <Image src="/arahkhatam_logo_B2.png" alt="ArahKhatam" width={36} height={36} className="h-9 w-9 rounded-full object-cover" priority />
           <span className="min-w-0 flex-1 leading-none">
             <span className="flex min-w-0 items-baseline gap-1">
@@ -52,12 +52,12 @@ export default function Navbar() {
             </span>
           </span>
         </a>
-        <div className="hidden items-center gap-0.5 md:ml-6 md:flex lg:ml-10 lg:gap-1">
+        <div className="hidden shrink-0 items-center justify-end gap-0.5 md:ml-auto md:flex lg:gap-1">
           {LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="pressable rounded-full px-3 py-2 text-sm font-semibold text-[#F6F1E7]/85 hover:bg-white/10 hover:text-white lg:px-4"
+              className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#F6F1E7]/85 hover:bg-white/10 hover:text-white lg:px-4 lg:text-sm"
             >
               {l.label}
             </a>
@@ -65,7 +65,7 @@ export default function Navbar() {
           <a
             href="/#donasi"
             onClick={ripple}
-            className="ripple-host pressable ml-3 inline-flex h-9 items-center rounded-full bg-[#E8A33D] px-5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
+            className="ripple-host pressable ml-3 inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full bg-[#E8A33D] px-5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
           >
             Dukung
           </a>
