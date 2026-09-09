@@ -16,6 +16,10 @@ const SEEN_KEY = "versi-terlihat";
 const CDN_FALLBACK =
   "https://cdn.equran.id/audio-partial/Misyari-Rasyid-Al-Afasi/001001.mp3";
 
+// Backdoor demo hanya di non-prod (atau NEXT_PUBLIC_ALLOW_DEMO=1). Di prod param diabaikan.
+const ALLOW_DEMO =
+  process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "1";
+
 function playSfx() {
   try {
     const a = new Audio("/sfx/bismillah.mp3");
@@ -49,18 +53,20 @@ export default function UpdatePopup() {
   bisuRef.current = bisu;
 
   useEffect(() => {
-    // Mode uji coba: buka /?demoUpdate=1 untuk melihat notifikasi
-    try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("demoUpdate") === "1") {
-        baseline.current = "demo-dasar";
-        setVersion("demo-baru");
-        setShow(true);
-        if (!bisuRef.current) playSfx();
-        return;
+    // Mode uji coba (non-prod saja): buka /?demoUpdate=1 untuk melihat notifikasi
+    if (ALLOW_DEMO) {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("demoUpdate") === "1") {
+          baseline.current = "demo-dasar";
+          setVersion("demo-baru");
+          setShow(true);
+          if (!bisuRef.current) playSfx();
+          return;
+        }
+      } catch {
+        // abaikan, lanjut ke cek versi normal
       }
-    } catch {
-      // abaikan, lanjut ke cek versi normal
     }
 
     let timer: ReturnType<typeof setInterval>;
@@ -175,10 +181,12 @@ export default function UpdatePopup() {
         <button
           onClick={() => {
             try {
-              const params = new URLSearchParams(window.location.search);
-              if (params.get("demoUpdate") === "1") {
-                window.location.replace(window.location.pathname);
-                return;
+              if (ALLOW_DEMO) {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get("demoUpdate") === "1") {
+                  window.location.replace(window.location.pathname);
+                  return;
+                }
               }
             } catch {
               // abaikan, lanjut reload biasa

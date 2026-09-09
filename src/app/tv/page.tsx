@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { kvGet, kvSet, getSelectedCityId } from "@/lib/db";
-import { getDailySchedule, activePrayer, searchCities, PRAYER_ORDER } from "@/lib/api";
+import { getDailySchedule, getServerNow, activePrayer, searchCities, PRAYER_ORDER } from "@/lib/api";
 import type { JadwalResponse, JadwalSholat, KotaItem, PrayerKey } from "@/lib/api";
 import { DEFAULT_CITIES } from "@/lib/cities";
 import { formatHijriah } from "@/lib/qibla";
@@ -85,6 +85,18 @@ const fmtMasehi = (d: Date) => {
   }
 };
 const kunciTanggal = (d: Date) => d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+
+// Backdoor demo (?azanDemo=1) hanya non-prod (atau NEXT_PUBLIC_ALLOW_DEMO=1). Di prod diabaikan.
+const ALLOW_DEMO =
+  process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_ALLOW_DEMO === "1";
+
+// PIN lokal 1x per sesi untuk aksi sensitif. Bawaan "1234", ubah via NEXT_PUBLIC_TV_PIN.
+const TV_PIN = process.env.NEXT_PUBLIC_TV_PIN || "1234";
+const PIN_KEY = "tv-pin-ok";
+// Koreksi jam server dibatasi ±5 menit; di luar itu (atau offline) pakai jam lokal.
+const OFFSET_MAX_MS = 5 * 60 * 1000;
+const clampOffset = (ms: number) =>
+  Math.max(-OFFSET_MAX_MS, Math.min(OFFSET_MAX_MS, Number.isFinite(ms) ? ms : 0));
 
 // Logika periode SAMA PERSIS dengan landing (JadwalHarian):
 // aktif = activePrayer 8 waktu, berikutnya = entri PRAYER_ORDER sesudah aktif.
@@ -182,12 +194,25 @@ export default function TvPage() {
   const [kutipanIdx, setKutipanIdx] = useState(0);
   const [kutipanPudar, setKutipanPudar] = useState(false);
   const [updateTampil, setUpdateTampil] = useState(false);
+  const [offsetMs, setOffsetMs] = useState(0);
+  const [pinOk, setPinOk] = useState(() => {
+    try {
+      return sessionStorage.getItem(PIN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const [pinTerbuka, setPinTerbuka] = useState(false);
+  const [pinInput, setPinInput] = useState("");
+  const [pinSalah, setPinSalah] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const previewRef = useRef<HTMLAudioElement | null>(null);
   const azanTelahBunyi = useRef<Set<string>>(new Set());
   const jadwalRef = useRef<JadwalResponse | null>(null);
   const azanDemoFired = useRef(false);
+  const offsetRef = useRef(0);
+  const pendingAksi = useRef<(() => void) | null>(null);
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
@@ -203,6 +228,30 @@ export default function TvPage() {
       return;
     }
   }, []);
+
+  // PIN: ingat 1x per sesi via sessionStorage (lazy init di pinOk; tanpa effect).
+
+  // Sinkron jam server saat display (tiap 60 dtk). Gagal/offline -> offset 0 (jam lokal).
+  useEffect(() => {
+    if (mode !== "display") return;
+    let hidup = true;
+    const sinkron = async () => {
+      try {
+        const off = clampOffset((await getServerNow()) - Date.now());
+        if (!hidup) return;
+        offsetRef.current = off;
+        setOffsetMs(off);
+      } catch {
+        // offline: tetap jam lokal
+      }
+    };
+    void sinkron();
+    const t = setInterval(sinkron, 60000);
+    return () => {
+      hidup = false;
+      clearInterval(t);
+    };
+  }, [mode]);
 
   // Muat simpanan saat mount.
   useEffect(() => {
@@ -288,12 +337,55 @@ export default function TvPage() {
     return () => clearTimeout(t);
   }, [keyword]);
 
-  const ubahAzanAktif = useCallback((v: boolean) => {
+  const mintaPin = useCallback(
+    (aksi: () => void) => {
+      try {
+        if (sessionStorage.getItem(PIN_KEY) === "1") {
+          aksi();
+          return;
+        }
+      } catch {
+        // sessionStorage tak tersedia, lanjut ke modal
+      }
+      if (pinOk) {
+        aksi();
+        return;
+      }
+      pendingAksi.current = aksi;
+      setPinInput("");
+      setPinSalah(false);
+      setPinTerbuka(true);
+    },
+    [pinOk]
+  );
+
+  const konfirmasiPin = useCallback(() => {
+    if (pinInput === TV_PIN) {
+      try {
+        sessionStorage.setItem(PIN_KEY, "1");
+      } catch {
+        // abaikan, pinOk state tetap berlaku sesi ini
+      }
+      setPinOk(true);
+      setPinTerbuka(false);
+      setPinSalah(false);
+      setPinInput("");
+      const aksi = pendingAksi.current;
+      pendingAksi.current = null;
+      aksi?.();
+    } else {
+      setPinSalah(true);
+    }
+  }, [pinInput]);
+
+  const ubahAzanAktifRaw = useCallback((v: boolean) => {
     setAzanAktif(v);
     void kvSet("tv-azan-aktif", v ? "1" : "0");
   }, []);
 
-  const ubahAzanPilihan = useCallback((i: number) => {
+  const ubahAzanAktif = useCallback((v: boolean) => mintaPin(() => ubahAzanAktifRaw(v)), [mintaPin, ubahAzanAktifRaw]);
+
+  const ubahAzanPilihanRaw = useCallback((i: number) => {
     try {
       previewRef.current?.pause();
     } catch {
@@ -305,7 +397,9 @@ export default function TvPage() {
     void kvSet("tv-azan-pilihan", String(i));
   }, []);
 
-  const simpan = useCallback(async () => {
+  const ubahAzanPilihan = useCallback((i: number) => mintaPin(() => ubahAzanPilihanRaw(i)), [mintaPin, ubahAzanPilihanRaw]);
+
+  const simpanRaw = useCallback(async () => {
     try {
       previewRef.current?.pause();
     } catch {
@@ -331,7 +425,9 @@ export default function TvPage() {
     }
   }, [nama, bg, kotaId, azanAktif, azanPilihan, daftarKutipan]);
 
-  const tampilkan = useCallback(async () => {
+  const simpan = useCallback(() => mintaPin(() => void simpanRaw()), [mintaPin, simpanRaw]);
+
+  const tampilkanRaw = useCallback(async () => {
     await simpan();
     // Unlock audio dalam gestur klik: preload URL terpilih + resume AudioContext.
     // Tanpa ini browser memblokir play() beberapa jam kemudian (autoplay policy).
@@ -385,6 +481,8 @@ export default function TvPage() {
       // browser menolak (misal tanpa gestur), tetap tampil non-fullscreen
     }
   }, [simpan, azanPilihan]);
+
+  const tampilkan = useCallback(() => mintaPin(() => void tampilkanRaw()), [mintaPin, tampilkanRaw]);
 
   const kembaliEditor = useCallback(() => {
     try {
@@ -545,7 +643,7 @@ export default function TvPage() {
     let hidup = true;
     const ambil = async () => {
       try {
-        const t = new Date();
+        const t = new Date(Date.now() + offsetRef.current);
         const res = await getDailySchedule(kotaId, t.getFullYear(), t.getMonth() + 1, t.getDate());
         if (hidup) setJadwal(res);
       } catch {
@@ -673,10 +771,12 @@ export default function TvPage() {
     if (mode !== "display" || !azanSiap || !azanAktif) return;
     const data = jadwal ?? jadwalRef.current;
     if (!data) return;
-    const nowMs = now.getTime();
+    // Jam koreksi server (clamp ±5 mnt); offline -> jam lokal.
+    const nowEff = new Date(now.getTime() + offsetRef.current);
+    const nowMs = nowEff.getTime();
     for (const k of FARDHU_KEYS) {
       const [h, m] = normHM(data.jadwal[k]).split(":").map(Number);
-      const target = new Date(now);
+      const target = new Date(nowEff);
       target.setHours(h || 0, m || 0, 0, 0);
       const deltaSec = (nowMs - target.getTime()) / 1000;
       if (deltaSec < 0 || deltaSec > 90) continue;
@@ -697,8 +797,9 @@ export default function TvPage() {
     }
   }, [now, mode, jadwal, azanAktif, azanSiap, mulaiAzan]);
 
-  // Hook tes: /tv?azanDemo=1 langsung picu popup 1 + audio di mode display.
+  // Hook tes (non-prod saja): /tv?azanDemo=1 langsung picu popup 1 + audio di mode display.
   useEffect(() => {
+    if (!ALLOW_DEMO) return;
     if (mode !== "display" || azanDemoFired.current) return;
     let params: URLSearchParams | null = null;
     try {
@@ -712,7 +813,7 @@ export default function TvPage() {
       try {
         const data = jadwalRef.current ?? jadwal;
         let key: PrayerKey = "dzuhur";
-        if (data) key = fardhuBerikut(data.jadwal, new Date()).key;
+        if (data) key = fardhuBerikut(data.jadwal, new Date(Date.now() + offsetRef.current)).key;
         mulaiAzan(key);
       } catch {
         mulaiAzan("dzuhur");
@@ -734,18 +835,18 @@ export default function TvPage() {
     void kvSet("tv-kutipan", JSON.stringify(arr));
   }, []);
 
-  const tambahKutipan = useCallback(() => {
+  const tambahKutipanRaw = useCallback(() => {
     const teks = draftKutipan.trim().slice(0, 160);
     if (!teks || daftarKutipan.length >= 20) return;
     setDraftKutipan("");
     simpanDaftarKutipan([...daftarKutipan, teks]);
   }, [draftKutipan, daftarKutipan, simpanDaftarKutipan]);
 
+  const tambahKutipan = useCallback(() => mintaPin(tambahKutipanRaw), [mintaPin, tambahKutipanRaw]);
+
   const hapusKutipan = useCallback(
-    (i: number) => {
-      simpanDaftarKutipan(daftarKutipan.filter((_, j) => j !== i));
-    },
-    [daftarKutipan, simpanDaftarKutipan]
+    (i: number) => mintaPin(() => simpanDaftarKutipan(daftarKutipan.filter((_, j) => j !== i))),
+    [mintaPin, daftarKutipan, simpanDaftarKutipan]
   );
 
   const onFile = async (f: File | undefined) => {
@@ -766,8 +867,10 @@ export default function TvPage() {
   // ---------- DISPLAY ----------
   if (mode === "display") {
     // Stabil: tidak ada key per detik, tidak ada animasi, teks polos saja.
-    const info = jadwal ? periodeTv(jadwal.jadwal, now) : null;
-    const azanBerikut = jadwal ? fardhuBerikut(jadwal.jadwal, now) : null;
+    // nowEff = jam koreksi server (clamp ±5 mnt), offline -> jam lokal.
+    const nowEff = new Date(now.getTime() + offsetMs);
+    const info = jadwal ? periodeTv(jadwal.jadwal, nowEff) : null;
+    const azanBerikut = jadwal ? fardhuBerikut(jadwal.jadwal, nowEff) : null;
     const daftarAktif = daftarKutipan.length ? daftarKutipan : KUTIPAN_DEFAULT;
     const teksKutipan = daftarAktif[kutipanIdx % daftarAktif.length];
     const azanOffset = updateTampil ? "top-64" : "top-4";
@@ -843,7 +946,7 @@ export default function TvPage() {
               </p>
               <h1 className="font-display mt-1 text-3xl leading-tight md:text-5xl">{nama.trim() || "Masjid"}</h1>
               <p className="mt-1 text-sm text-[#F6F1E7]/75 md:text-base">
-                {jadwal?.lokasi ?? kotaNama} • {fmtMasehi(now)} • {formatHijriah(now)}
+                {jadwal?.lokasi ?? kotaNama} • {fmtMasehi(nowEff)} • {formatHijriah(nowEff)}
               </p>
             </div>
             <p className="max-w-[240px] text-right text-xs leading-relaxed text-[#F6F1E7]/60 max-md:hidden">
@@ -891,7 +994,7 @@ export default function TvPage() {
           {/* Jam + countdown di bawah (polos, tanpa animasi) */}
           <div className="flex flex-1 flex-col items-center justify-center py-4 text-center">
             <p className="font-display text-[20vw] leading-none tabular-nums sm:text-8xl md:text-[10rem]" aria-live="off">
-              {fmtClock(now)}
+              {fmtClock(nowEff)}
             </p>
             <div className="mt-4 rounded-3xl border border-[#E8A33D]/40 bg-black/40 px-8 py-4 backdrop-blur-sm">
               {info && jadwal ? (
@@ -1215,6 +1318,49 @@ export default function TvPage() {
           {saving ? "Menyimpan…" : "Tampilkan di TV ⛶"}
         </button>
         <p className="mt-2 text-center text-xs text-[#F6F1E7]/50">Masuk fullscreen otomatis. Tekan ESC untuk kembali ke editor.</p>
+
+        {pinTerbuka && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="alertdialog" aria-label="Masukkan PIN">
+            <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#0E2A22] p-5 text-center">
+              <p className="text-xs font-bold tracking-[0.2em] text-[#E8A33D]">PIN DIBUTUHKAN</p>
+              <input
+                type="password"
+                inputMode="numeric"
+                value={pinInput}
+                onChange={(e) => setPinInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    konfirmasiPin();
+                  }
+                }}
+                placeholder="PIN"
+                aria-label="PIN"
+                className="mt-3 w-full rounded-2xl border border-white/15 bg-[#071410] px-4 py-3 text-center text-lg tracking-widest outline-none focus:border-[#E8A33D]"
+              />
+              {pinSalah && <p className="mt-2 text-xs text-red-300" role="status">PIN salah, coba lagi.</p>}
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  onClick={konfirmasiPin}
+                  className="rounded-full bg-[#E8A33D] px-4 py-2.5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
+                >
+                  OK
+                </button>
+                <button
+                  onClick={() => {
+                    setPinTerbuka(false);
+                    setPinSalah(false);
+                    setPinInput("");
+                    pendingAksi.current = null;
+                  }}
+                  className="rounded-full border border-white/25 px-4 py-2.5 text-sm font-bold text-[#F6F1E7] hover:bg-white/10"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

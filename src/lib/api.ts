@@ -214,6 +214,20 @@ export async function searchCities(keyword: string): Promise<KotaItem[]> {
   }
 }
 
+// Jam server (no-store). Offline/gagal -> fallback Date.now() agar TV tetap jalan lokal.
+export async function getServerNow(): Promise<number> {
+  try {
+    const res = await fetch("/api/waktu", { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = (await res.json()) as { now?: unknown };
+    const n = Number(json?.now);
+    if (Number.isFinite(n) && n > 0) return n;
+  } catch {
+    // abaikan, fallback lokal
+  }
+  return Date.now();
+}
+
 export function nextPrayer(jadwal: JadwalSholat, now: Date = new Date()) {
   const toDate = (hm: string) => {
     const [h, m] = hm.split(":").map(Number);

@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Display TV | ArahKhatam",
-  description:
-    "Display TV masjid ArahKhatam: jam besar, countdown sholat berikutnya, dan jadwal 8 waktu hari ini.",
-};
+import { useEffect } from "react";
 
-// Halaman mandiri: tanpa Navbar/Footer. Root layout hanya menyertakan
-// UpdatePopup global (dibisukan di /tv) + efek latar.
 export default function TvLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    document.title = "Display TV | ArahKhatam";
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker
+      .register("/tv/sw.js", { scope: "/tv", updateViaCache: "none" })
+      .catch(() => {});
+  }, []);
+
   return <div className="min-h-screen bg-[#0B1F1A] text-[#F6F1E7]">{children}</div>;
 }

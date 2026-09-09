@@ -35,6 +35,8 @@ export default function JilidView({ jilid }: Props) {
   const doneHere = ids.filter((id) => done.includes(id)).length;
   const pct = ids.length ? Math.round((doneHere / ids.length) * 100) : 0;
 
+  // Tandai manual = progress lokal saja, bukan bukti lulus.
+  // Bukti lulus resmi hanya dari server via ujian.
   const toggleDone = async (lessonId: string) => {
     hentiSuara();
     const next = await toggleIqroLesson(lessonId).catch(() => done);
@@ -95,8 +97,11 @@ export default function JilidView({ jilid }: Props) {
                 href={"/iqro/" + jilid.jilid + "/ujian"}
                 className="pressable shrink-0 rounded-full bg-[#0B1F1A] px-6 py-2.5 text-sm font-bold text-[#F6F1E7] max-md:min-h-[48px] max-md:py-3"
               >
-                Mulai ujian
+                Mulai ujian (penentu lulus server)
               </Link>
+              <p className="w-full text-xs opacity-70" style={{ color: jilid.coverText }}>
+                Tandai manual hanya progress lokal. Lulus resmi wajib via ujian server.
+              </p>
               {ttsOk && (
                 <button
                   onClick={toggleSuara}
@@ -135,7 +140,7 @@ export default function JilidView({ jilid }: Props) {
                           : "bg-[#0B1F1A] text-[#F6F1E7] hover:bg-[#0E2A22]")
                       }
                     >
-                      {isDone ? "Selesai, batalkan" : "Tandai selesai"}
+                      {isDone ? "Selesai (manual), batalkan" : "Tandai selesai (manual)"}
                     </button>
                   </div>
                   <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
