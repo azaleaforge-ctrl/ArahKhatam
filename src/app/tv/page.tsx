@@ -877,7 +877,7 @@ export default function TvPage() {
     const teksKutipan = daftarAktif[kutipanIdx % daftarAktif.length];
     const azanOffset = updateTampil ? "top-64" : "top-4";
     return (
-      <main className="kawung-dark fixed inset-0 overflow-hidden bg-[#0B1F1A] text-[#F6F1E7]" aria-label="Display TV jadwal sholat">
+      <main className="kawung-dark tv-stage fixed inset-0 overflow-hidden bg-[#0B1F1A] text-[#F6F1E7]" aria-label="Display TV jadwal sholat">
         {/* Latar + overlay gelap */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#071410] via-[#0B1F1A] to-[#071410]" aria-hidden />
         <SafeImage
@@ -939,14 +939,14 @@ export default function TvPage() {
           </div>
         )}
 
-        <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col px-6 py-6 md:px-12 md:py-8">
+        <div className="tv-safe relative z-10 mx-auto flex h-full min-h-0 w-full max-w-7xl flex-col px-6 py-6 md:px-12 md:py-8">
           {/* Bar atas */}
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-[11px] font-bold tracking-[0.3em] text-[#E8A33D] md:text-xs">
                 ARAHKHATAM • DISPLAY MASJID
               </p>
-              <h1 className="font-display mt-1 text-3xl leading-tight md:text-5xl">{nama.trim() || "Masjid"}</h1>
+              <h1 className="tv-title font-display mt-1 text-3xl leading-tight md:text-5xl">{nama.trim() || "Masjid"}</h1>
               <p className="mt-1 text-sm text-[#F6F1E7]/75 md:text-base">
                 {jadwal?.lokasi ?? kotaNama} • {fmtMasehi(nowEff)} • {formatHijriah(nowEff)}
               </p>
@@ -958,7 +958,7 @@ export default function TvPage() {
           </div>
 
           {/* Grid 8 waktu - highlight periode AKTIF sama seperti landing */}
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-8 md:gap-3" role="list" aria-label="Jadwal 8 waktu hari ini">
+          <div className="tv-grid mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-8 md:gap-3" role="list" aria-label="Jadwal 8 waktu hari ini">
             {PRAYER_ORDER.map((k) => {
               const isAktif = info?.aktif === k;
               return (
@@ -975,7 +975,7 @@ export default function TvPage() {
                   <p className={"text-xs font-bold tracking-widest md:text-sm " + (isAktif ? "" : "text-[#E8A33D]")}>
                     {PRAYER_LABEL[k].toUpperCase()}
                   </p>
-                  <p className="font-display mt-1 text-2xl tabular-nums md:text-4xl">
+                  <p className="tv-grid-time font-display mt-1 text-2xl tabular-nums md:text-4xl">
                     {jadwal ? jadwal.jadwal[k] : "--:--"}
                   </p>
                 </div>
@@ -986,7 +986,7 @@ export default function TvPage() {
           {/* Kutipan: antara grid dan countdown, fade in/out, polos bila reduced */}
           <p
             className={
-              "font-display mx-auto mt-3 max-w-3xl px-2 text-center text-lg italic leading-relaxed text-[#F6F1E7]/70 md:text-2xl " +
+              "tv-quote font-display mx-auto mt-3 max-w-3xl px-2 text-center text-lg italic leading-relaxed text-[#F6F1E7]/70 md:text-2xl " +
               (reduced ? "" : "transition-opacity duration-700 ") +
               (kutipanPudar && !reduced ? "opacity-0" : "opacity-100")
             }
@@ -995,24 +995,24 @@ export default function TvPage() {
           </p>
 
           {/* Jam + countdown di bawah (polos, tanpa animasi) */}
-          <div className="flex flex-1 flex-col items-center justify-center py-4 text-center">
-            <p className="font-display text-[20vw] leading-none tabular-nums sm:text-8xl md:text-[10rem]" aria-live="off">
+          <div className="tv-center flex flex-1 min-h-0 flex-col items-center justify-center py-4 text-center">
+            <p className="tv-clock font-display text-[20vw] leading-none tabular-nums sm:text-8xl md:text-[10rem]" aria-live="off">
               {fmtClock(nowEff)}
             </p>
-            <div className="mt-4 rounded-3xl border border-[#E8A33D]/40 bg-black/40 px-8 py-4 backdrop-blur-sm">
+            <div className="tv-countcard mt-4 rounded-3xl border border-[#E8A33D]/40 bg-black/40 px-8 py-4 backdrop-blur-sm">
               {info && jadwal ? (
                 <>
                   <p className="text-xs font-bold tracking-[0.25em] text-[#E8A33D]">
                     {(PRAYER_LABEL[info.berikut] ?? String(info.berikut)).toUpperCase()} • {jadwal.jadwal[info.berikut]}
                   </p>
-                  <p className="font-display mt-1 text-4xl tabular-nums md:text-6xl">
+                  <p className="tv-count font-display mt-1 text-4xl tabular-nums md:text-6xl">
                     −{fmtCount(info.diffSec)}
                   </p>
                 </>
               ) : (
                 <>
                   <p className="text-xs font-bold tracking-[0.25em] text-[#E8A33D]">MENYIAPKAN JADWAL</p>
-                  <p className="font-display mt-1 text-4xl tabular-nums md:text-6xl">--:--:--</p>
+                  <p className="tv-count font-display mt-1 text-4xl tabular-nums md:text-6xl">--:--:--</p>
                 </>
               )}
             </div>

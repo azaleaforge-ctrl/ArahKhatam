@@ -328,3 +328,109 @@ section {
     filter: none;
   }
 }
+
+/* TV 42" TCL (Browser Here): overscan + viewport pendek 720p.
+   Terisolasi di min-width:1280px agar <1280px dan md: laptop tidak berubah.
+   - .tv-safe: padding fallback 3-4vmin + env(safe-area-inset-*) untuk overscan 5%
+   - .tv-stage: 100vh -> 100svh -> 100dvh + overflow-y auto darurat (countdown L1008 anti-kepotong)
+   - Fluid clamp(): jam, countdown, grid 8 kolom tetap 1 baris */
+@media (min-width: 1280px) {
+  .tv-root {
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+  .tv-stage {
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    min-height: 480px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  .tv-safe {
+    box-sizing: border-box;
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    padding: 3vmin 4vmin;
+    padding-top: calc(3vmin + env(safe-area-inset-top, 0px));
+    padding-right: calc(4vmin + env(safe-area-inset-right, 0px));
+    padding-bottom: calc(4vmin + env(safe-area-inset-bottom, 0px));
+    padding-left: calc(4vmin + env(safe-area-inset-left, 0px));
+    gap: clamp(0.5rem, 1.6vh, 1rem);
+  }
+  .tv-title {
+    font-size: clamp(1.75rem, 2vw + 2vh, 3rem);
+  }
+  .tv-grid {
+    margin-top: clamp(0.5rem, 1.6vh, 1rem);
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+  }
+  .tv-grid > div {
+    min-width: 0;
+    padding: clamp(0.5rem, 1.6vh, 1rem) 0.5rem;
+  }
+  .tv-grid-time {
+    font-size: clamp(1.1rem, 3.4vh, 2.25rem);
+  }
+  .tv-quote {
+    font-size: clamp(1rem, 2.6vh, 1.5rem);
+    margin-top: clamp(0.4rem, 1.4vh, 0.75rem);
+  }
+  .tv-center {
+    padding: clamp(0.5rem, 1.8vh, 1rem) 0;
+    gap: clamp(0.4rem, 1.4vh, 0.75rem);
+  }
+  .tv-clock {
+    font-size: clamp(3.5rem, 17vh, 9rem);
+  }
+  .tv-countcard {
+    margin-top: clamp(0.5rem, 1.8vh, 1rem);
+    padding: clamp(0.6rem, 2vh, 1rem) clamp(1.25rem, 3vw, 2rem);
+    max-width: 100%;
+  }
+  .tv-count {
+    font-size: clamp(1.9rem, 7vh, 3.75rem);
+  }
+}
+
+/* TV pendek (720p + overscan): compact, grid tetap 1 baris, kutipan 1 baris */
+@media (min-width: 1280px) and (max-height: 800px) {
+  .tv-grid > div {
+    padding: 0.5rem 0.4rem;
+    border-radius: 0.9rem;
+  }
+  .tv-grid-time {
+    font-size: clamp(1rem, 3.4vh, 1.4rem);
+  }
+  .tv-quote {
+    font-size: clamp(0.9rem, 2.4vh, 1.15rem);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 92%;
+  }
+  .tv-clock {
+    font-size: clamp(3rem, 15vh, 5.5rem);
+  }
+  .tv-count {
+    font-size: clamp(1.6rem, 6vh, 2.6rem);
+  }
+  .tv-countcard {
+    padding: 0.6rem 1.5rem;
+  }
+}
+
+/* Landing di TV besar pendek (browser bawaan TCL): longgarkan atas-bawah saja.
+   Sengaja tanpa menyentuh Hero.tsx; <1920px tidak tersentuh. */
+@media (min-width: 1920px) and (max-height: 1100px) {
+  #atas {
+    padding-top: clamp(4rem, 9vh, 6rem);
+    padding-bottom: clamp(1.5rem, 4vh, 3rem);
+  }
+  #atas span.font-display {
+    font-size: clamp(2rem, 2vw + 3vh, 2.875rem);
+  }
+}

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function TvLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0B1F1A] text-[#F6F1E7]">
+    <div className="tv-root min-h-screen bg-[#0B1F1A] text-[#F6F1E7]">
       <TvSw />
       {children}
     </div>
