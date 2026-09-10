@@ -47,9 +47,9 @@ export default function Navbar() {
           : "border-transparent bg-[#0B1F1A]/60 backdrop-blur-xl")
       }
     >
-      <nav className="mx-auto flex h-[64px] w-full max-w-[680px] items-center justify-between gap-2 px-4 md:max-w-6xl md:gap-4 md:px-6">
-        <a href="/#atas" className="flex min-w-0 flex-none shrink-0 items-center gap-3">
-          <Image src="/arahkhatam_logo_B2.png" alt="ArahKhatam" width={36} height={36} className="h-9 w-9 rounded-full object-cover" priority />
+      <nav className="mx-auto flex h-[64px] w-full max-w-[680px] flex-nowrap items-center justify-between gap-2 px-4 md:max-w-6xl md:px-6 lg:max-w-7xl lg:gap-3">
+        <a href="/#atas" className="flex min-w-0 flex-none shrink-0 items-center gap-2.5">
+          <Image src="/arahkhatam_logo_B2.png" alt="ArahKhatam" width={36} height={36} className="h-9 w-9 flex-none rounded-full object-cover" priority />
           <span className="min-w-0 flex-1 leading-none">
             <span className="flex min-w-0 items-baseline gap-1">
               <span className="font-display block truncate text-[17px] font-bold tracking-tight text-[#F6F1E7]">
@@ -59,17 +59,17 @@ export default function Navbar() {
                 kiblat & khatam
               </span>
             </span>
-            <span className="mt-[2px] block truncate text-[11px] tracking-wide text-white/50 min-[375px]:text-white/40">
+            <span className="mt-[2px] block truncate text-[11px] tracking-wide text-white/50 min-[375px]:text-white/40 lg:hidden">
               penunjuk kiblat & khatam
             </span>
           </span>
         </a>
-        <div className="hidden shrink-0 items-center justify-end gap-0.5 md:ml-auto md:flex lg:gap-1">
+        <div className="hidden min-w-0 flex-none items-center justify-end gap-0.5 lg:ml-auto lg:flex">
           {LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#F6F1E7]/85 hover:bg-white/10 hover:text-white lg:px-4 lg:text-sm"
+              className="pressable whitespace-nowrap rounded-full px-2 py-2 text-[13px] font-semibold text-[#F6F1E7]/85 hover:bg-white/10 hover:text-white xl:px-3"
             >
               {l.label}
             </a>
@@ -77,19 +77,24 @@ export default function Navbar() {
           <button
             onClick={() => void klikInstall()}
             aria-expanded={bantuan}
-            className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#E8A33D] hover:bg-white/10 lg:px-4 lg:text-sm"
+            className="pressable ml-1 inline-flex h-8 flex-none items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D] hover:bg-[#E8A33D]/10"
           >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3v12" />
+              <path d="m7 10 5 5 5-5" />
+              <path d="M4 21h16" />
+            </svg>
             Install App
           </button>
           <a
             href="/#donasi"
             onClick={ripple}
-            className="ripple-host pressable ml-3 inline-flex h-9 shrink-0 items-center whitespace-nowrap rounded-full bg-[#E8A33D] px-5 text-sm font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
+            className="ripple-host pressable ml-2 inline-flex h-8 flex-none items-center whitespace-nowrap rounded-full bg-[#E8A33D] px-4 text-[13px] font-bold text-[#0B1F1A] hover:bg-[#f2b558]"
           >
             Dukung
           </a>
         </div>
-        <div className="flex shrink-0 items-center gap-1 md:hidden">
+        <div className="flex shrink-0 items-center gap-1 lg:hidden">
           <button
             onClick={() => void klikInstall()}
             aria-expanded={bantuan}
