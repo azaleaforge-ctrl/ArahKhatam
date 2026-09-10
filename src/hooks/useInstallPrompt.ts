@@ -24,6 +24,7 @@ function isStandalone(): boolean {
 export function useInstallPrompt() {
   const [installable, setInstallable] = useState(false);
   const [installed, setInstalled] = useState<boolean>(() => isStandalone());
+  const [canPrompt, setCanPrompt] = useState(false);
   const eventRef = useRef<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
@@ -36,10 +37,12 @@ export function useInstallPrompt() {
       }
       eventRef.current = e as BeforeInstallPromptEvent;
       setInstallable(true);
+      setCanPrompt(true);
     };
     const onInstalled = () => {
       eventRef.current = null;
       setInstallable(false);
+      setCanPrompt(false);
       setInstalled(true);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
@@ -50,22 +53,25 @@ export function useInstallPrompt() {
     };
   }, []);
 
-  const install = useCallback(async () => {
+  // "prompted": prompt native jalan; "manual": tak ada event (browser tua/sudah terinstal/iOS).
+  const install = useCallback(async (): Promise<"prompted" | "manual"> => {
     const ev = eventRef.current;
-    if (!ev) return;
+    if (!ev) return "manual";
     try {
       await ev.prompt();
       const pilih = await ev.userChoice;
       if (pilih && pilih.outcome === "accepted") {
         eventRef.current = null;
         setInstallable(false);
+        setCanPrompt(false);
       }
+      return "prompted";
     } catch {
-      // abaikan
+      return "manual";
     }
   }, []);
 
-  return { installable, installed, install };
+  return { installable, installed, canPrompt, install };
 }
 
 export default useInstallPrompt;

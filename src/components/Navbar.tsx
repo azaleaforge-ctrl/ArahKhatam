@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { ripple } from "./fx";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 
@@ -20,10 +19,17 @@ const LINKS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-  const { installable, installed, install } = useInstallPrompt();
-  const pathname = usePathname();
-  const showInstall =
-    installable && !installed && !(typeof pathname === "string" && pathname.startsWith("/tv"));
+  const [bantuan, setBantuan] = useState(false);
+  const { canPrompt, install } = useInstallPrompt();
+
+  const klikInstall = useCallback(async () => {
+    if (!canPrompt) {
+      setBantuan((v) => !v);
+      return;
+    }
+    const hasil = await install();
+    setBantuan(hasil === "manual");
+  }, [canPrompt, install]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -68,14 +74,13 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
-          {showInstall && (
-            <button
-              onClick={() => void install()}
-              className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#E8A33D] hover:bg-white/10 lg:px-4 lg:text-sm"
-            >
-              Install App
-            </button>
-          )}
+          <button
+            onClick={() => void klikInstall()}
+            aria-expanded={bantuan}
+            className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#E8A33D] hover:bg-white/10 lg:px-4 lg:text-sm"
+          >
+            Install App
+          </button>
           <a
             href="/#donasi"
             onClick={ripple}
@@ -85,14 +90,13 @@ export default function Navbar() {
           </a>
         </div>
         <div className="flex shrink-0 items-center gap-1 md:hidden">
-          {showInstall && (
-            <button
-              onClick={() => void install()}
-              className="pressable inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D]"
-            >
-              Install
-            </button>
-          )}
+          <button
+            onClick={() => void klikInstall()}
+            aria-expanded={bantuan}
+            className="pressable inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D]"
+          >
+            Install
+          </button>
           <a
             href={DONASI_URL}
             target="_blank"
@@ -104,6 +108,27 @@ export default function Navbar() {
           </a>
         </div>
       </nav>
+      {bantuan && (
+        <div className="absolute inset-x-4 top-full mx-auto max-w-md pt-2" role="dialog" aria-label="Cara memasang aplikasi">
+          <div className="rounded-3xl border border-[#E8A33D]/40 bg-[#0B1F1A] p-4 text-[#F6F1E7] shadow-2xl">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm font-bold">Cara Pasang ArahKhatam</p>
+              <button
+                onClick={() => setBantuan(false)}
+                aria-label="Tutup"
+                className="shrink-0 rounded-full border border-white/20 px-3 py-1.5 text-xs font-bold text-[#F6F1E7]/80 hover:bg-white/10"
+              >
+                ✕
+              </button>
+            </div>
+            <ul className="mt-2 space-y-2 text-xs leading-relaxed text-[#F6F1E7]/80">
+              <li><strong className="text-[#E8A33D]">Android Chrome:</strong> menu ⋮ → Install app</li>
+              <li><strong className="text-[#E8A33D]">iPhone Safari:</strong> Share → Add to Home Screen</li>
+              <li><strong className="text-[#E8A33D]">TV/browser lain:</strong> gunakan browser modern (TV Bro/Chrome) lalu buka menu ini lagi.</li>
+            </ul>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
