@@ -52,8 +52,12 @@ export default function KiblatCompass({ cityId }: Props) {
         setLon(String(p.coords.longitude.toFixed(5)));
         setStatus("Lokasi browser berhasil dipakai.");
       },
-      () => setStatus("Izin lokasi ditolak, isi manual saja."),
-      { enableHighAccuracy: true, timeout: 8000 }
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) setStatus("Izin lokasi ditolak, isi manual saja.");
+        else if (err.code === err.TIMEOUT) setStatus("Lokasi timeout, coba lagi atau isi manual.");
+        else setStatus("Lokasi tidak tersedia di perangkat ini, isi manual saja.");
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
     );
   };
 
