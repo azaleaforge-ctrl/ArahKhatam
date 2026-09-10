@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export type DisplayProfile = "compact" | "normal";
 
@@ -135,6 +135,7 @@ const INITIAL: DisplayInfo = {
 
 export function useDisplayInfo(): DisplayInfo {
   const [info, setInfo] = useState<DisplayInfo>(INITIAL);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -145,12 +146,35 @@ export function useDisplayInfo(): DisplayInfo {
         // abaikan, nilai lama tetap dipakai
       }
     };
+    // Settle pasca-fullscreen/resize: debounce agar baca dimensi final, bukan transisi.
+    const schedule = () => {
+      try {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(update, 450);
+      } catch {
+        // abaikan
+      }
+    };
     update();
     window.addEventListener("resize", update);
     try {
       window.addEventListener("orientationchange", update);
     } catch {
       // browser tua tanpa orientationchange, resize cukup
+    }
+    try {
+      if (typeof document !== "undefined") {
+        document.addEventListener("fullscreenchange", schedule);
+      }
+    } catch {
+      // abaikan
+    }
+    let vv: VisualViewport | null = null;
+    try {
+      vv = window.visualViewport ?? null;
+      vv?.addEventListener("resize", schedule);
+    } catch {
+      // browser tua tanpa visualViewport
     }
     return () => {
       window.removeEventListener("resize", update);
@@ -159,6 +183,19 @@ export function useDisplayInfo(): DisplayInfo {
       } catch {
         // abaikan
       }
+      try {
+        if (typeof document !== "undefined") {
+          document.removeEventListener("fullscreenchange", schedule);
+        }
+      } catch {
+        // abaikan
+      }
+      try {
+        vv?.removeEventListener("resize", schedule);
+      } catch {
+        // abaikan
+      }
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 

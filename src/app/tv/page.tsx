@@ -481,11 +481,8 @@ export default function TvPage() {
       // abaikan
     }
     setMode("display");
-    try {
-      await document.documentElement.requestFullscreen();
-    } catch {
-      // browser menolak (misal tanpa gestur), tetap tampil non-fullscreen
-    }
+    // Satu pintu fullscreen ada di effect display (enterFullscreen, coba sekali).
+    // Gagal = tetap non-fullscreen; layout fixed inset-0 identik.
   }, [simpan, azanPilihan]);
 
   const tampilkan = useCallback(() => mintaPin(() => void tampilkanRaw()), [mintaPin, tampilkanRaw]);
@@ -571,15 +568,6 @@ export default function TvPage() {
   useEffect(() => {
     if (mode === "display") hentikanPreview();
   }, [mode, hentikanPreview]);
-  // Simpan profil layar TV saat display mount agar editor di perangkat sama bisa baca.
-  useEffect(() => {
-    if (mode !== "display") return;
-    try {
-      void kvSet("tv-display-profile", snapshotDisplayProfile()).catch(() => {});
-    } catch {
-      // abaikan, jangan ganggu fullscreen/keyboard
-    }
-  }, [mode]);
   useEffect(() => {
     return () => {
       try {
@@ -605,23 +593,88 @@ export default function TvPage() {
     }
   }, [mode]);
 
-  // Fullscreen otomatis saat masuk display; exit kembali ke editor.
+  // Satu pintu fullscreen saat masuk display: coba sekali; gagal = tetap non-fullscreen.
+  // Kunci ulang profil setelah settle: abaikan resize jendela transisi 1000ms, debounce 450ms.
+  const enteredFsRef = useRef(false);
   useEffect(() => {
     if (mode !== "display") return;
-    try {
-      if (!document.fullscreenElement) {
-        void document.documentElement.requestFullscreen().catch(() => {});
+    enteredFsRef.current = false;
+    const masuk = Date.now();
+    const enter = async () => {
+      try {
+        if (typeof document === "undefined") return;
+        if (document.fullscreenElement) {
+          enteredFsRef.current = true;
+          return;
+        }
+        const el = document.documentElement as HTMLElement & {
+          requestFullscreen?: () => Promise<void>;
+        };
+        if (document.fullscreenEnabled === false || typeof el.requestFullscreen !== "function") return;
+        await el.requestFullscreen();
+      } catch {
+        // entry gagal (tanpa gestur / TV tua): tetap display non-fullscreen
       }
+    };
+    void enter();
+    // Simpan profil saat mount (dimensi awal); settle di bawah menimpa dengan dimensi final.
+    try {
+      void kvSet("tv-display-profile", snapshotDisplayProfile()).catch(() => {});
     } catch {
-      // abaikan
+      // abaikan, jangan ganggu fullscreen/keyboard
     }
     const onFs = () => {
-      if (document.fullscreenElement === null && modeRef.current === "display") {
-        setMode("editor");
+      try {
+        if (document.fullscreenElement) {
+          enteredFsRef.current = true;
+          return;
+        }
+        // Hanya user-exit sungguhan (pernah masuk lalu keluar, mis. ESC/Back).
+        // Entry gagal tak pernah masuk = tak ada event = tetap display.
+        if (modeRef.current === "display" && enteredFsRef.current) {
+          setMode("editor");
+        }
+      } catch {
+        // abaikan
+      }
+    };
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const kunciUlang = () => {
+      try {
+        if (Date.now() - masuk < 1000) return;
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+          try {
+            void kvSet("tv-display-profile", snapshotDisplayProfile()).catch(() => {});
+          } catch {
+            // abaikan
+          }
+        }, 450);
+      } catch {
+        // abaikan
       }
     };
     document.addEventListener("fullscreenchange", onFs);
-    return () => document.removeEventListener("fullscreenchange", onFs);
+    document.addEventListener("fullscreenchange", kunciUlang);
+    window.addEventListener("resize", kunciUlang);
+    let vv: VisualViewport | null = null;
+    try {
+      vv = window.visualViewport ?? null;
+      vv?.addEventListener("resize", kunciUlang);
+    } catch {
+      // browser tua tanpa visualViewport
+    }
+    return () => {
+      document.removeEventListener("fullscreenchange", onFs);
+      document.removeEventListener("fullscreenchange", kunciUlang);
+      window.removeEventListener("resize", kunciUlang);
+      try {
+        vv?.removeEventListener("resize", kunciUlang);
+      } catch {
+        // abaikan
+      }
+      if (timer) clearTimeout(timer);
+    };
   }, [mode]);
 
   // Remote TV / keyboard: ESC, Backspace, GoBack, 27/8/461/10009 -> editor.
