@@ -1,7 +1,7 @@
 /* Service Worker manual, scope /tv saja. Jangan cache rute non-/tv. */
-const STATIC_CACHE = "tv-static-v1";
+const STATIC_CACHE = "tv-static-v2";
 const SCHEDULE_CACHE = "tv-jadwal-v1";
-const PRECACHE = ["/tv", "/tv/~offline"];
+const PRECACHE = ["/tv", "/tv/~offline", "/icons/icon-192.png", "/icons/icon-512.png", "/manifest.webmanifest"];
 const NAV_TIMEOUT_MS = 3000;
 const SCHEDULE_TTL_MS = 24 * 60 * 60 * 1000;
 const SCHEDULE_MAX = 100;
@@ -74,8 +74,28 @@ function networkFirstNav(request) {
   });
 }
 
-function staleWhileRevalidate(request, cacheName) {
-  return caches.open(cacheName).then((cache) =>
+// Shell /tv: cache-first + revalidasi latar; offline = cache lalu /tv/~offline.
+function cacheFirstShell(request) {
+  return caches.match(request).then((hit) => {
+    const refresh = fetch(request)
+      .then((res) => {
+        if (res && res.ok) {
+          caches.open(STATIC_CACHE).then((cache) => cache.put(request, res.clone()));
+        }
+        return res;
+      })
+      .catch(() => null);
+    if (hit) {
+      refresh.catch(() => {});
+      return hit;
+    }
+    return refresh.then(
+      (res) => res || caches.match("/tv/~offline")
+    );
+  });
+}
+
+function staleWhileRevalidate(request, cacheName) {  return caches.open(cacheName).then((cache) =>
     cache.match(request).then((cached) => {
       const network = fetch(request)
         .then((res) => {
@@ -141,9 +161,14 @@ self.addEventListener("fetch", (event) => {
   const isStatic = url.pathname.startsWith("/_next/static/");
   if (!inTv && !isStatic) return;
 
-  // Navigasi /tv*: NetworkFirst 3 detik, fallback /tv/~offline.
+  // Navigasi /tv*: shell "/" tepat cache-first + revalidasi latar;
+  // navigasi lain NetworkFirst 3 detik; semua fallback cache lalu /tv/~offline (tak pernah blank).
   if (request.mode === "navigate" || (inTv && request.destination === "document")) {
-    event.respondWith(networkFirstNav(request));
+    if (url.pathname === "/tv") {
+      event.respondWith(cacheFirstShell(request));
+    } else {
+      event.respondWith(networkFirstNav(request));
+    }
     return;
   }
 

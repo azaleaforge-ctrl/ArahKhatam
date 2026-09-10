@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     images: ["/opengraph-image"],
   },
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/arahkhatam_logo_B2.png", apple: "/arahkhatam_logo_B2.png" },
+  icons: { icon: "/arahkhatam_logo_B2.png", apple: "/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
