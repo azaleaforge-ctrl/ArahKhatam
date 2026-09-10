@@ -59,7 +59,7 @@ export default function Navbar() {
                 kiblat & khatam
               </span>
             </span>
-            <span className="mt-[2px] block truncate text-[11px] tracking-wide text-white/50 min-[375px]:text-white/40 lg:hidden">
+            <span className="mt-[2px] block truncate text-[11px] tracking-wide text-white/50 min-[375px]:text-white/40">
               penunjuk kiblat & khatam
             </span>
           </span>
