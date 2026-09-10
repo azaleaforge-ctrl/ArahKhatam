@@ -19,7 +19,7 @@ const fraunces = Fraunces({
   display: "swap",
 });
 
-const DEFAULT_TITLE = "ArahKhatam — Jadwal Sholat, Arah Kiblat, Al-Quran & Iqro Indonesia";
+const DEFAULT_TITLE = "ArahKhatam: Jadwal Sholat, Arah Kiblat, Al-Quran & Iqro Indonesia";
 const DESCRIPTION =
   "Jadwal sholat akurat seluruh Indonesia, kompas arah kiblat, baca Al-Quran terjemah Kemenag, dan belajar Iqro 1-6 online gratis.";
 

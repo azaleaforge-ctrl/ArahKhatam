@@ -24,7 +24,7 @@ export async function generateMetadata({
   if (!Number.isInteger(n) || n < 1 || n > 114) return NOINDEX;
   try {
     const { detail } = await getSuratDetail(n);
-    const title = "QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " Ayat | ArahKhatam";
+    const title = "QS. " + detail.namaLatin + " (" + detail.arti + "): " + detail.jumlahAyat + " Ayat | ArahKhatam";
     const description =
       "Baca QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " ayat, teks Arab, latin, terjemah Kemenag, audio per ayat, dan tafsir di ArahKhatam.";
     const url = SITE_URL + "/quran/" + n;
