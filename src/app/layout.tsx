@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import UpdatePopup from "@/components/UpdatePopup";
-import InstallPrompt from "@/components/InstallPrompt";
 import CursorGlow from "@/components/CursorGlow";
 import SociabuzzFloat from "@/components/SociabuzzFloat";
 import SplashGate from "@/components/SplashGate";
@@ -103,7 +102,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <UpdatePopup />
         <SociabuzzFloat />
-        <InstallPrompt />
       </body>
     </html>
   );

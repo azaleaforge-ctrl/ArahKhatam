@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { ripple } from "./fx";
+import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 
 const DONASI_URL = process.env.NEXT_PUBLIC_SOCIABUZZ_URL ?? "https://sociabuzz.com/azaleaforge15/tribe";
 const LINKS = [
@@ -18,6 +20,10 @@ const LINKS = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { installable, installed, install } = useInstallPrompt();
+  const pathname = usePathname();
+  const showInstall =
+    installable && !installed && !(typeof pathname === "string" && pathname.startsWith("/tv"));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -62,6 +68,14 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
+          {showInstall && (
+            <button
+              onClick={() => void install()}
+              className="pressable whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-semibold text-[#E8A33D] hover:bg-white/10 lg:px-4 lg:text-sm"
+            >
+              Install App
+            </button>
+          )}
           <a
             href="/#donasi"
             onClick={ripple}
@@ -70,7 +84,15 @@ export default function Navbar() {
             Dukung
           </a>
         </div>
-        <div className="flex shrink-0 items-center md:hidden">
+        <div className="flex shrink-0 items-center gap-1 md:hidden">
+          {showInstall && (
+            <button
+              onClick={() => void install()}
+              className="pressable inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D]"
+            >
+              Install
+            </button>
+          )}
           <a
             href={DONASI_URL}
             target="_blank"
