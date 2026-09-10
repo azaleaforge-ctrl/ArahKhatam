@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Reveal from "../Reveal";
 import { ripple } from "../fx";
-import { sfxBenar } from "@/lib/sfx";
+import { sfxBenar, sfxSalah } from "@/lib/sfx";
 import { bicaraItem, hentiSuara, suaraAktif } from "@/lib/suara";
 import { getFinishedIqroLessons, setLastIqro, toggleIqroLesson } from "@/lib/db";
 import type { IqroJilid } from "@/lib/iqro";
@@ -13,10 +13,12 @@ type Props = {
   jilid: IqroJilid;
 };
 
-// Soal tampil saja: tanpa kunci jawaban. Penilaian mutlak di server.
+// Kunci ikut ke client untuk umpan balik instan per soal.
+// Kelulusan tetap otoritas server (POST /api/iqro/ujian).
 type SoalTampil = {
   id: string;
   arab: string;
+  kunci: string;
   options: string[];
 };
 
@@ -45,7 +47,7 @@ function buildSoal(jilid: IqroJilid): SoalTampil[] {
     const item = acak[i % acak.length];
     const lain = shuffle(unik.filter((l) => l !== item.latin));
     while (lain.length < 3) lain.push(...shuffle(unik));
-    return { id: item.arab, arab: item.arab, options: shuffle([item.latin, ...lain.slice(0, 3)]) };
+    return { id: item.arab, arab: item.arab, kunci: item.latin, options: shuffle([item.latin, ...lain.slice(0, 3)]) };
   });
 }
 
@@ -61,6 +63,7 @@ export default function UjianView({ jilid }: Props) {
   const [mengirim, setMengirim] = useState(false);
   const [galat, setGalat] = useState<string | null>(null);
   const [hasil, setHasil] = useState<HasilServer | null>(null);
+  const timer = useRef<number | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const soal = useMemo(() => buildSoal(jilid), [jilid, ronde]);
@@ -75,6 +78,7 @@ export default function UjianView({ jilid }: Props) {
   useEffect(
     () => () => {
       hentiSuara();
+      if (timer.current) window.clearTimeout(timer.current);
     },
     []
   );
@@ -116,8 +120,12 @@ export default function UjianView({ jilid }: Props) {
     ripple(e);
     if (picked || !current || selesai) return;
     setPicked(opt);
+    if (opt === current.kunci) sfxBenar();
+    else sfxSalah();
     const finalPicks = [...picks, opt];
-    setTimeout(() => {
+    if (timer.current) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      timer.current = null;
       setPicks(finalPicks);
       if (qi + 1 >= soal.length) {
         setSelesai(true);
@@ -126,12 +134,16 @@ export default function UjianView({ jilid }: Props) {
         setQi(qi + 1);
         setPicked(null);
       }
-    }, 350);
+    }, 3000);
   };
 
   const ulangi = (e: React.MouseEvent<HTMLElement>) => {
     ripple(e);
     hentiSuara();
+    if (timer.current) {
+      window.clearTimeout(timer.current);
+      timer.current = null;
+    }
     setRonde((r) => r + 1);
     setQi(0);
     setPicks([]);
@@ -205,6 +217,8 @@ export default function UjianView({ jilid }: Props) {
                   <div className="mt-5 grid gap-2 sm:grid-cols-2 max-md:gap-3">
                     {current.options.map((opt) => {
                       const dipilih = picked === opt;
+                      const adalahKunci = picked !== null && opt === current.kunci;
+                      const salahPilih = dipilih && picked !== current.kunci;
                       return (
                         <button
                           key={opt}
@@ -212,9 +226,11 @@ export default function UjianView({ jilid }: Props) {
                           disabled={!!picked}
                           className={
                             "pressable rounded-2xl px-5 py-3 text-sm font-bold max-md:min-h-[56px] max-md:py-4 max-md:text-base " +
-                            (dipilih
-                              ? "bg-[#E8A33D] text-[#0B1F1A]"
-                              : "bg-white/10 text-[#F6F1E7] hover:bg-white/20")
+                            (adalahKunci
+                              ? "bg-[#15803d] text-white"
+                              : salahPilih
+                                ? "bg-[#dc2626] text-white"
+                                : "bg-white/10 text-[#F6F1E7] hover:bg-white/20")
                           }
                         >
                           {opt}
@@ -222,6 +238,18 @@ export default function UjianView({ jilid }: Props) {
                       );
                     })}
                   </div>
+                  {picked !== null && (
+                    <p
+                      className={
+                        "mt-3 text-center text-sm font-bold " +
+                        (picked === current.kunci ? "text-[#4ade80]" : "text-[#f87171]")
+                      }
+                    >
+                      {picked === current.kunci
+                        ? "Benar! Lanjut ke soal berikutnya…"
+                        : "Kurang tepat. Yang benar: " + current.kunci}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="text-center">
