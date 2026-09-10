@@ -218,6 +218,8 @@ export default function TvPage() {
   const pendingAksi = useRef<(() => void) | null>(null);
   const modeRef = useRef(mode);
   modeRef.current = mode;
+  // Jalur TV lewati fullscreen (tanpa persistensi, tanpa query param).
+  const lewatiFsRef = useRef(false);
   const { locked: wakeLocked } = useScreenWakeLock(mode === "display");
   const displayInfo = useDisplayInfo();
 
@@ -433,7 +435,7 @@ export default function TvPage() {
 
   const simpan = useCallback(() => mintaPin(() => void simpanRaw()), [mintaPin, simpanRaw]);
 
-  const tampilkanRaw = useCallback(async () => {
+  const tampilkanRaw = useCallback(async (lewatiFs: boolean) => {
     await simpan();
     // Unlock audio dalam gestur klik: preload URL terpilih + resume AudioContext.
     // Tanpa ini browser memblokir play() beberapa jam kemudian (autoplay policy).
@@ -481,13 +483,17 @@ export default function TvPage() {
       // abaikan
     }
     setMode("display");
-    // Satu pintu fullscreen ada di effect display (enterFullscreen, coba sekali).
+    lewatiFsRef.current = lewatiFs;
+    // Satu pintu fullscreen ada di effect display (enterFullscreen, coba sekali) —
+    // kecuali jalur TV (lewatiFs) yang memang tak memanggilnya sama sekali.
     // Gagal = tetap non-fullscreen; layout fixed inset-0 identik.
   }, [simpan, azanPilihan]);
 
-  const tampilkan = useCallback(() => mintaPin(() => void tampilkanRaw()), [mintaPin, tampilkanRaw]);
+  const tampilkan = useCallback(() => mintaPin(() => void tampilkanRaw(false)), [mintaPin, tampilkanRaw]);
+  const tampilkanTv = useCallback(() => mintaPin(() => void tampilkanRaw(true)), [mintaPin, tampilkanRaw]);
 
   const kembaliEditor = useCallback(() => {
+    lewatiFsRef.current = false;
     try {
       if (document.fullscreenElement) {
         void document.exitFullscreen().catch(() => setMode("editor"));
@@ -616,7 +622,11 @@ export default function TvPage() {
         // entry gagal (tanpa gestur / TV tua): tetap display non-fullscreen
       }
     };
-    void enter();
+    // Jalur TV (lewatiFs): JANGAN panggil enterFullscreen sama sekali.
+    // Settle snapshot + listener resize di bawah tetap jalan (tak memicu zoom).
+    if (!lewatiFsRef.current) {
+      void enter();
+    }
     // Simpan profil saat mount (dimensi awal); settle di bawah menimpa dengan dimensi final.
     try {
       void kvSet("tv-display-profile", snapshotDisplayProfile()).catch(() => {});
@@ -1381,14 +1391,23 @@ export default function TvPage() {
 
         {pesan && <p className="mt-4 rounded-2xl border border-[#E8A33D]/40 bg-[#E8A33D]/10 px-4 py-3 text-sm" role="status">{pesan}</p>}
 
-        <button
-          onClick={tampilkan}
-          disabled={saving}
-          className="mt-6 w-full rounded-full bg-[#E8A33D] px-6 py-4 text-base font-bold text-[#0B1F1A] hover:bg-[#f2b558] disabled:opacity-60 max-md:sticky max-md:bottom-4 max-md:z-30 max-md:min-h-[56px]"
-        >
-          {saving ? "Menyimpan…" : "Tampilkan di TV ⛶"}
-        </button>
-        <p className="mt-2 text-center text-xs text-[#F6F1E7]/50">Masuk fullscreen otomatis. Tekan ESC untuk kembali ke editor.</p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <button
+            onClick={tampilkan}
+            disabled={saving}
+            className="w-full rounded-full bg-[#E8A33D] px-6 py-4 text-base font-bold text-[#0B1F1A] hover:bg-[#f2b558] disabled:opacity-60 max-md:min-h-[56px]"
+          >
+            {saving ? "Menyimpan…" : "Untuk HP dan Laptop/PC"}
+          </button>
+          <button
+            onClick={tampilkanTv}
+            disabled={saving}
+            className="w-full rounded-full border border-[#E8A33D] px-6 py-4 text-base font-bold text-[#E8A33D] hover:bg-[#E8A33D]/10 disabled:opacity-60 max-md:min-h-[56px]"
+          >
+            {saving ? "Menyimpan…" : "Khusus untuk TV"}
+          </button>
+        </div>
+        <p className="mt-2 text-center text-xs text-[#F6F1E7]/50">Jalur HP masuk fullscreen otomatis. Tekan ESC untuk kembali ke editor.</p>
 
         {pinTerbuka && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4" role="alertdialog" aria-label="Masukkan PIN">
