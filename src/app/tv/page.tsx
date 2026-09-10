@@ -7,7 +7,9 @@ import type { JadwalResponse, JadwalSholat, KotaItem, PrayerKey } from "@/lib/ap
 import { DEFAULT_CITIES } from "@/lib/cities";
 import { formatHijriah } from "@/lib/qibla";
 import SafeImage from "@/components/SafeImage";
+import ResolutionPanel from "@/components/tv/ResolutionPanel";
 import { useScreenWakeLock } from "@/hooks/useScreenWakeLock";
+import { snapshotDisplayProfile, useDisplayInfo } from "@/hooks/useDisplayInfo";
 
 const PRESETS = [
   { src: "/media/masjid-agung-bandung.jpg", label: "Masjid Agung" },
@@ -217,6 +219,7 @@ export default function TvPage() {
   const modeRef = useRef(mode);
   modeRef.current = mode;
   const { locked: wakeLocked } = useScreenWakeLock(mode === "display");
+  const displayInfo = useDisplayInfo();
 
   // Hormati prefers-reduced-motion: matikan animasi denyut/transisi.
   useEffect(() => {
@@ -419,13 +422,14 @@ export default function TvPage() {
         kvSet("tv-azan-aktif", azanAktif ? "1" : "0"),
         kvSet("tv-azan-pilihan", String(azanPilihan)),
         kvSet("tv-kutipan", JSON.stringify(daftarKutipan)),
+        kvSet("tv-display-profile", displayInfo.profile),
       ]);
     } catch {
       setPesan("Penyimpanan penuh: gambar upload terlalu besar, pakai foto preset.");
     } finally {
       setSaving(false);
     }
-  }, [nama, bg, kotaId, azanAktif, azanPilihan, daftarKutipan]);
+  }, [nama, bg, kotaId, azanAktif, azanPilihan, daftarKutipan, displayInfo.profile]);
 
   const simpan = useCallback(() => mintaPin(() => void simpanRaw()), [mintaPin, simpanRaw]);
 
@@ -567,6 +571,15 @@ export default function TvPage() {
   useEffect(() => {
     if (mode === "display") hentikanPreview();
   }, [mode, hentikanPreview]);
+  // Simpan profil layar TV saat display mount agar editor di perangkat sama bisa baca.
+  useEffect(() => {
+    if (mode !== "display") return;
+    try {
+      void kvSet("tv-display-profile", snapshotDisplayProfile()).catch(() => {});
+    } catch {
+      // abaikan, jangan ganggu fullscreen/keyboard
+    }
+  }, [mode]);
   useEffect(() => {
     return () => {
       try {
@@ -1217,6 +1230,8 @@ export default function TvPage() {
             Dipilih: <strong className="text-[#E8A33D]">{kotaNama}</strong> <span className="opacity-60">({kotaId})</span>
           </p>
         </section>
+
+        <ResolutionPanel />
 
         <section className="mt-4 rounded-3xl border border-white/10 bg-white/5 p-5 md:p-7" aria-label="Suara azan">
           <div className="flex items-center justify-between gap-3">
