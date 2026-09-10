@@ -1,15 +1,16 @@
-"use client";
+import type { Metadata } from "next";
+import TvSw from "./TvSw";
 
-import { useEffect } from "react";
+export const metadata: Metadata = {
+  title: { absolute: "Display TV Masjid | ArahKhatam" },
+  robots: { index: false, follow: false, noarchive: true, nosnippet: true },
+};
 
 export default function TvLayout({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    document.title = "Display TV | ArahKhatam";
-    if (!("serviceWorker" in navigator)) return;
-    navigator.serviceWorker
-      .register("/tv/sw.js", { scope: "/tv", updateViaCache: "none" })
-      .catch(() => {});
-  }, []);
-
-  return <div className="min-h-screen bg-[#0B1F1A] text-[#F6F1E7]">{children}</div>;
+  return (
+    <div className="min-h-screen bg-[#0B1F1A] text-[#F6F1E7]">
+      <TvSw />
+      {children}
+    </div>
+  );
 }

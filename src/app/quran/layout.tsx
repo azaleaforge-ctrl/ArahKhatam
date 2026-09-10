@@ -3,6 +3,7 @@ import { Amiri } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import { SITE_URL } from "@/lib/site";
 
 // Font arab hanya dimuat di halaman quran agar landing tetap ringan.
 const amiri = Amiri({
@@ -12,10 +13,29 @@ const amiri = Amiri({
   display: "swap",
 });
 
+const TITLE = "Baca AlQuran dan Terjemah";
+const DESCRIPTION =
+  "Baca 114 surah AlQuran dengan teks arab, latin, terjemah Kemenag, audio per ayat, tafsir, dan pelacak khatam.";
+
 export const metadata: Metadata = {
-  title: "Baca AlQuran dan Terjemah | ArahKhatam",
-  description:
-    "Baca 114 surah AlQuran dengan teks arab, latin, terjemah Kemenag, audio per ayat, tafsir, dan pelacak khatam.",
+  title: { default: TITLE + " | ArahKhatam", template: "%s | ArahKhatam" },
+  description: DESCRIPTION,
+  alternates: { canonical: SITE_URL + "/quran" },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "ArahKhatam",
+    url: SITE_URL + "/quran",
+    title: TITLE + " | ArahKhatam",
+    description: DESCRIPTION,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ArahKhatam" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE + " | ArahKhatam",
+    description: DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function QuranLayout({ children }: { children: React.ReactNode }) {

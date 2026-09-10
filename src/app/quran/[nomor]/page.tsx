@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSuratDetail, sanitizeDeskripsi } from "@/lib/quran";
+import { SITE_URL } from "@/lib/site";
 import SurahView from "@/components/quran/SurahView";
 import Reveal from "@/components/Reveal";
 
@@ -11,16 +12,45 @@ export function generateStaticParams() {
   return Array.from({ length: 114 }, (_, i) => ({ nomor: String(i + 1) }));
 }
 
+const NOINDEX: Metadata = { robots: { index: false, follow: false } };
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ nomor: string }>;
 }): Promise<Metadata> {
   const { nomor } = await params;
-  return {
-    title: "Surah " + nomor + " | Baca AlQuran ArahKhatam",
-    description: "Baca surah " + nomor + " dengan teks arab, latin, terjemah, audio, dan tafsir.",
-  };
+  const n = Number(nomor);
+  if (!Number.isInteger(n) || n < 1 || n > 114) return NOINDEX;
+  try {
+    const { detail } = await getSuratDetail(n);
+    const title = "QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " Ayat | ArahKhatam";
+    const description =
+      "Baca QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " ayat, teks Arab, latin, terjemah Kemenag, audio per ayat, dan tafsir di ArahKhatam.";
+    const url = SITE_URL + "/quran/" + n;
+    return {
+      title: { absolute: title },
+      description,
+      alternates: { canonical: url },
+      openGraph: {
+        type: "article",
+        locale: "id_ID",
+        siteName: "ArahKhatam",
+        url,
+        title,
+        description,
+        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ["/opengraph-image"],
+      },
+    };
+  } catch {
+    return NOINDEX;
+  }
 }
 
 export default async function SurahPage({ params }: { params: Promise<{ nomor: string }> }) {
@@ -56,8 +86,22 @@ export default async function SurahPage({ params }: { params: Promise<{ nomor: s
     );
   }
 
+  const url = SITE_URL + "/quran/" + n;
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " Ayat",
+    description:
+      "Baca QS. " + detail.namaLatin + " (" + detail.arti + ") — " + detail.jumlahAyat + " ayat, teks Arab, latin, terjemah Kemenag, audio per ayat, dan tafsir.",
+    inLanguage: "id-ID",
+    mainEntityOfPage: url,
+    author: { "@type": "Organization", name: "ArahKhatam", url: SITE_URL },
+    publisher: { "@type": "Organization", name: "ArahKhatam", url: SITE_URL },
+  };
+
   return (
     <main className="min-w-0 overflow-x-clip">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
       <section className="kawung-dark relative overflow-hidden bg-[#0B1F1A] pt-28 pb-10 md:pt-36 md:pb-14">
         <div
           aria-hidden="true"

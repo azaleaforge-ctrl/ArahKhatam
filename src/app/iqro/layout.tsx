@@ -3,6 +3,7 @@ import { Amiri } from "next/font/google";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
+import { SITE_URL } from "@/lib/site";
 
 // Font arab hanya dimuat di halaman quran dan iqro agar landing tetap ringan.
 const amiri = Amiri({
@@ -12,10 +13,29 @@ const amiri = Amiri({
   display: "swap",
 });
 
+const TITLE = "Belajar Iqro 1 sampai 6";
+const DESCRIPTION =
+  "Belajar Iqro jilid 1 sampai 6 dengan bacaan pendek, kuis tebak bacaan, makhraj 28 huruf, dan latihan Juz Amma.";
+
 export const metadata: Metadata = {
-  title: "Belajar Iqro 1 sampai 6 | ArahKhatam",
-  description:
-    "Belajar Iqro jilid 1 sampai 6 dengan bacaan pendek, kuis tebak bacaan, makhraj 28 huruf, dan latihan Juz Amma.",
+  title: { default: TITLE + " | ArahKhatam", template: "%s | ArahKhatam" },
+  description: DESCRIPTION,
+  alternates: { canonical: SITE_URL + "/iqro" },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "ArahKhatam",
+    url: SITE_URL + "/iqro",
+    title: TITLE + " | ArahKhatam",
+    description: DESCRIPTION,
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ArahKhatam" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE + " | ArahKhatam",
+    description: DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function IqroLayout({ children }: { children: React.ReactNode }) {
