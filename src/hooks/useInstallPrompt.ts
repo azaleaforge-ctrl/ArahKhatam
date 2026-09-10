@@ -21,9 +21,36 @@ function isStandalone(): boolean {
   }
 }
 
+const FLAG = "arahkhatam-installed";
+
+function bacaFlag(): boolean {
+  try {
+    if (typeof localStorage === "undefined") return false;
+    return localStorage.getItem(FLAG) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function tulisFlag(): void {
+  try {
+    localStorage.setItem(FLAG, "1");
+  } catch {
+    // abaikan (mode privat)
+  }
+}
+
+function hapusFlag(): void {
+  try {
+    localStorage.removeItem(FLAG);
+  } catch {
+    // abaikan
+  }
+}
+
 export function useInstallPrompt() {
   const [installable, setInstallable] = useState(false);
-  const [installed, setInstalled] = useState<boolean>(() => isStandalone());
+  const [installed, setInstalled] = useState<boolean>(() => isStandalone() || bacaFlag());
   const [canPrompt, setCanPrompt] = useState(false);
   const eventRef = useRef<BeforeInstallPromptEvent | null>(null);
 
@@ -35,6 +62,9 @@ export function useInstallPrompt() {
       } catch {
         // abaikan
       }
+      // SELF-HEALING: event = Chrome menyatakan belum terinstal → bersihkan flag basi.
+      hapusFlag();
+      setInstalled(false);
       eventRef.current = e as BeforeInstallPromptEvent;
       setInstallable(true);
       setCanPrompt(true);
@@ -43,6 +73,7 @@ export function useInstallPrompt() {
       eventRef.current = null;
       setInstallable(false);
       setCanPrompt(false);
+      tulisFlag();
       setInstalled(true);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
@@ -64,6 +95,8 @@ export function useInstallPrompt() {
         eventRef.current = null;
         setInstallable(false);
         setCanPrompt(false);
+        tulisFlag();
+        setInstalled(true);
       }
       return "prompted";
     } catch {

@@ -20,7 +20,8 @@ const LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [bantuan, setBantuan] = useState(false);
-  const { canPrompt, install } = useInstallPrompt();
+  const { canPrompt, installed, install } = useInstallPrompt();
+  const showInstall = !installed;
 
   const klikInstall = useCallback(async () => {
     if (!canPrompt) {
@@ -74,18 +75,20 @@ export default function Navbar() {
               {l.label}
             </a>
           ))}
-          <button
-            onClick={() => void klikInstall()}
-            aria-expanded={bantuan}
-            className="pressable ml-1 inline-flex h-8 flex-none items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D] hover:bg-[#E8A33D]/10"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M12 3v12" />
-              <path d="m7 10 5 5 5-5" />
-              <path d="M4 21h16" />
-            </svg>
-            Install App
-          </button>
+          {showInstall && (
+            <button
+              onClick={() => void klikInstall()}
+              aria-expanded={bantuan}
+              className="pressable ml-1 inline-flex h-8 flex-none items-center gap-1.5 whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D] hover:bg-[#E8A33D]/10"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M4 21h16" />
+              </svg>
+              Install App
+            </button>
+          )}
           <a
             href="/#donasi"
             onClick={ripple}
@@ -95,13 +98,15 @@ export default function Navbar() {
           </a>
         </div>
         <div className="flex shrink-0 items-center gap-1 lg:hidden">
-          <button
-            onClick={() => void klikInstall()}
-            aria-expanded={bantuan}
-            className="pressable inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D]"
-          >
-            Install
-          </button>
+          {showInstall && (
+            <button
+              onClick={() => void klikInstall()}
+              aria-expanded={bantuan}
+              className="pressable inline-flex h-9 shrink-0 items-center justify-center whitespace-nowrap rounded-full border border-[#E8A33D]/50 px-3 text-[13px] font-bold text-[#E8A33D]"
+            >
+              Install
+            </button>
+          )}
           <a
             href={DONASI_URL}
             target="_blank"
@@ -113,7 +118,7 @@ export default function Navbar() {
           </a>
         </div>
       </nav>
-      {bantuan && (
+      {bantuan && showInstall && (
         <div className="absolute inset-x-4 top-full mx-auto max-w-md pt-2" role="dialog" aria-label="Cara memasang aplikasi">
           <div className="rounded-3xl border border-[#E8A33D]/40 bg-[#0B1F1A] p-4 text-[#F6F1E7] shadow-2xl">
             <div className="flex items-start justify-between gap-3">
